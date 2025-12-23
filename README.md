@@ -2,7 +2,7 @@
 
 **Nodebase** is a modern automation platform—similar to Zapier—designed for developers and teams who want powerful workflows with built-in AI capabilities. It enables you to connect apps, automate tasks, and build intelligent workflows using a fast, type-safe, and scalable stack.
 
-Built with **Next.js**, **tRPC**, **Prisma**, and **BetterAuth**, Nodebase focuses on performance, developer experience, and extensibility.
+Built with **Next.js**, **tRPC**, **Drizzle ORM**, and **BetterAuth**, Nodebase focuses on performance, developer experience, and extensibility.
 
 ---
 
@@ -23,7 +23,7 @@ Built with **Next.js**, **tRPC**, **Prisma**, and **BetterAuth**, Nodebase focus
 
 - **Framework**: Next.js
 - **API Layer**: tRPC
-- **Database ORM**: Prisma
+- **Database ORM**: Drizzle ORM
 - **Authentication**: BetterAuth
 - **Language**: TypeScript
 - **AI Integration**: OpenAI / LLM providers (pluggable)
