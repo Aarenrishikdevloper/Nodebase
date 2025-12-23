@@ -13,7 +13,7 @@ Built with **Next.js**, **tRPC**, **Drizzle ORM**, and **BetterAuth**, Nodebase 
 - 🧩 **Modular Nodes** – Build workflows using reusable, composable nodes
 - 🔐 **Authentication & Authorization** – Secure auth powered by BetterAuth
 - ⚡ **Type-Safe API** – End-to-end type safety with tRPC
-- 🗄️ **Database Management** – Prisma ORM for reliable data modeling and migrations
+- 🗄️ **Database Management** –  Drizzle ORM for reliable data modeling and migrations
 - 🌐 **Modern UI** – Built with Next.js App Router for fast, scalable interfaces
 - 📈 **Scalable Architecture** – Designed to grow from side projects to production systems
 
