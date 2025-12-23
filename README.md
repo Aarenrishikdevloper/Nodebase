@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nodebase ⚡
 
-## Getting Started
+**Nodebase** is a modern automation platform—similar to Zapier—designed for developers and teams who want powerful workflows with built-in AI capabilities. It enables you to connect apps, automate tasks, and build intelligent workflows using a fast, type-safe, and scalable stack.
 
-First, run the development server:
+Built with **Next.js**, **tRPC**, **Prisma**, and **BetterAuth**, Nodebase focuses on performance, developer experience, and extensibility.
+
+---
+
+## ✨ Features
+
+- 🔗 **Workflow Automation** – Create trigger → action pipelines across services
+- 🤖 **AI-Powered Automations** – Integrate AI steps for decision-making, text generation, summarization, and more
+- 🧩 **Modular Nodes** – Build workflows using reusable, composable nodes
+- 🔐 **Authentication & Authorization** – Secure auth powered by BetterAuth
+- ⚡ **Type-Safe API** – End-to-end type safety with tRPC
+- 🗄️ **Database Management** – Prisma ORM for reliable data modeling and migrations
+- 🌐 **Modern UI** – Built with Next.js App Router for fast, scalable interfaces
+- 📈 **Scalable Architecture** – Designed to grow from side projects to production systems
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js
+- **API Layer**: tRPC
+- **Database ORM**: Prisma
+- **Authentication**: BetterAuth
+- **Language**: TypeScript
+- **AI Integration**: OpenAI / LLM providers (pluggable)
+- **Deployment**: Vercel / Docker / Node.js
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+
+- Node.js (>= 18)
+- PostgreSQL / MySQL / SQLite
+- pnpm / npm / yarn
+
+### Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+git clone https://github.com/your-org/nodebase.git
+cd nodebase
