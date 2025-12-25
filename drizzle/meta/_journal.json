@@ -8,6 +8,13 @@
       "when": 1766506560362,
       "tag": "0000_messy_mysterio",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766669567772,
+      "tag": "0001_daily_major_mapleleaf",
+      "breakpoints": true
     }
   ]
 }
