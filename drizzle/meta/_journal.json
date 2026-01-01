@@ -15,6 +15,20 @@
       "when": 1766669567772,
       "tag": "0001_daily_major_mapleleaf",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1767243223071,
+      "tag": "0002_yielding_skullbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1767280685533,
+      "tag": "0003_lowly_ezekiel",
+      "breakpoints": true
     }
   ]
 }

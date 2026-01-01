@@ -3,7 +3,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { FC } from "react";
 
 interface ComponentNameProps {
-  propName: type;
   children: React.ReactNode;
 }
 
