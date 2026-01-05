@@ -1,9 +1,12 @@
 "use client";
-import { EntityContainer, EntityHeaders } from "@/components/ui/entity-view";
+import { EmptyView, EntityContainer, EntityHeaders, EntityItem, EntityList, LoadingView } from "@/components/ui/entity-view";
 import React from "react";
-import { useCreateWorkFlow } from "../hooks/use-workflow";
+import { useCreateWorkFlow, useRemoveWorkflow, useSuspenseWorkflows } from "../hooks/use-workflow";
 import { useRouter } from "next/navigation";
-
+import { InferSelectModel } from "drizzle-orm";
+import { workflows } from "@/lib/db/schema";
+import  {formatDistanceToNow} from 'date-fns'
+import { WorkflowIcon } from "lucide-react";
 //--- Workflow Container -----
 export const WorkFlowContainer = ({
   children,
@@ -21,7 +24,7 @@ export const WorkflowHeader = ({ disabled }: { disabled?: boolean }) => {
   const handleCreate = () => {
     createWorkflow.mutate(undefined, {
       onSuccess: (data) => {
-        router.push(`$workflow/${data.id}`);
+        router.push(`/workflow/${data.id}`);
       },
       onError: (error) => {
         console.log(error);
@@ -40,4 +43,62 @@ export const WorkflowHeader = ({ disabled }: { disabled?: boolean }) => {
       />
     </>
   );
-};
+};  
+type woekflow = InferSelectModel<typeof workflows>      
+export const WorkflowItem =({data}:{data:woekflow})=>{   
+  const removeWorkflow = useRemoveWorkflow(); 
+  const handleRemove =()=>{
+    removeWorkflow.mutate({id:data.id})
+  }
+return  <EntityItem   
+     href={`/workflow/${data.id}`}   
+     title={data.name}   
+     subtitle={
+       <> 
+         Updated {formatDistanceToNow(data.updatedAt,{addSuffix:true})} {" "}  
+         &bull; Created {' '}     
+         {formatDistanceToNow(data.createdAt,{addSuffix:true})}
+       </>
+     }  
+     image={
+       <div className="size-8 flex items-center justify-center">
+        <WorkflowIcon className="size-5 text-muted-foreground"/>
+       </div>
+     }  
+     onRemove={handleRemove} 
+     isRemoving={removeWorkflow.isPending}
+  />
+}   
+export const WorkFlowEmpty =()=>{  
+     const createWorkflow = useCreateWorkFlow();
+  const router = useRouter();
+  const handleCreate = () => {
+    createWorkflow.mutate(undefined, {
+      onSuccess: (data) => {
+        router.push(`/workflow/${data.id}`);
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    });
+  };
+   return(
+     <> 
+       <EmptyView onNew={handleCreate} message="You haven't created any workflows yet. Get started by creating your first workflow"/>
+     </>
+   )
+}
+export const WorkflowList =()=>{
+   const workflows = useSuspenseWorkflows();  
+   return <EntityList   
+      items={workflows.data.items}    
+      getKey={(workflow)=>workflow.id}   
+      renderItem={(workflow)=><WorkflowItem data={workflow}/>}   
+      emptyView={<WorkFlowEmpty/>}
+   />
+}  
+export const WorkflowLoader =()=>{
+  return <LoadingView message="Loading Workflows...."/>
+}   
+
+
