@@ -1,5 +1,5 @@
 "use client";
-import { EmptyView, EntityContainer, EntityHeaders, EntityItem, EntityList, LoadingView } from "@/components/ui/entity-view";
+import { EmptyView, EntityContainer, EntityHeaders, EntityItem, EntityList, EntitySearch, LoadingView } from "@/components/ui/entity-view";
 import React from "react";
 import { useCreateWorkFlow, useRemoveWorkflow, useSuspenseWorkflows } from "../hooks/use-workflow";
 import { useRouter } from "next/navigation";
@@ -7,6 +7,8 @@ import { InferSelectModel } from "drizzle-orm";
 import { workflows } from "@/lib/db/schema";
 import  {formatDistanceToNow} from 'date-fns'
 import { WorkflowIcon } from "lucide-react";
+import { useWorkflowParams } from "../hooks/use-workflow-params";
+import { useEntitySearch } from "../hooks/use-search";
 //--- Workflow Container -----
 export const WorkFlowContainer = ({
   children,
@@ -14,7 +16,7 @@ export const WorkFlowContainer = ({
   children: React.ReactNode;
 }) => {
   return (
-    <EntityContainer header={<WorkflowHeader />}>{children}</EntityContainer>
+    <EntityContainer header={<WorkflowHeader /> } search={<WorkflowSearch/>}>{children}</EntityContainer>
   );
 };
 //WorkflowHeader
@@ -101,4 +103,16 @@ export const WorkflowLoader =()=>{
   return <LoadingView message="Loading Workflows...."/>
 }   
 
+export const WorkflowSearch =()=>{
+  const [params, setParams] = useWorkflowParams()      
+  const {searchValue, onSearchChange} = useEntitySearch({
+    params, 
+    setParams
+  })
 
+  return <EntitySearch   
+     placeholder="Search Workflows"   
+     value={searchValue}  
+     onChange={onSearchChange}
+  />
+}
