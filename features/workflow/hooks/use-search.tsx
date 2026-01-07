@@ -14,22 +14,22 @@ export function useEntitySearch<T extends { search?: string; page?: number }>({
 }: useEnitySearchPops<T>) {
   const [localSearch, setLocalSearch] = useState(params.search || "");
 
-  useEffect(() => {
+  useEffect(() => { 
+    if(localSearch === "" && params.search !== ""){
+      setParams({
+        ...params, 
+        search:"", 
+        page:PAGINATION.DEFAULT_PAGE
+      })
+    }
     const timer = setTimeout(() => {
-      const currentSearch = params.search || "";
-      
-      if (localSearch !== currentSearch) {
-        const newParams = { ...params, page: PAGINATION.DEFAULT_PAGE };
-        
-        if (!localSearch) {
-          // Remove search param completely when empty
-          const { search, ...rest } = newParams;
-          setParams(rest as T);
-        } else {
-          // Add search param when not empty
-          setParams({ ...newParams, search: localSearch });
-        }
-      }
+       if(localSearch !== params.search){
+         setParams({
+          ...params, 
+          search:localSearch,   
+          page:PAGINATION.DEFAULT_PAGE
+         })
+       }
     }, debounceMs);
 
     return () => clearTimeout(timer);

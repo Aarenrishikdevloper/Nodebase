@@ -54,7 +54,7 @@ export const workflowRouter = createTRPCRouter({
           .where(
             and(
               eq(workflows.userId, ctx.auth.user.id),
-              search && searchtrime ? ilike(workflows.name, `%${search}%`) : undefined,
+              search && searchtrime ? ilike(workflows.name, `%${searchtrime}%`) : undefined,
             ),
           )
           .orderBy(desc(workflows.updatedAt))
