@@ -22,10 +22,12 @@ import {
   LogOutIcon,
   StarIcon,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 const AppSidebar = () => {
-  const pathname = usePathname();
+  const pathname = usePathname(); 
+  const router = useRouter();
   // Define menu groups
   const menuGroups = [
     {
@@ -106,7 +108,15 @@ const AppSidebar = () => {
               <span>Billing Portal</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuButton tooltip={"Sign Out"} className="gap-x-4 h-10 px-4">
+          <SidebarMenuButton tooltip={"Sign Out"} className="gap-x-4 h-10 px-4" onClick={()=>{
+            authClient.signOut({
+              fetchOptions:{
+                onSuccess:()=>{
+                  router.push("/login")
+                }
+              }
+            })
+          }}>
             <LogOutIcon className="h-4 w-4" />
             <span>Sign Out</span>
           </SidebarMenuButton>

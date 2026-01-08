@@ -53,10 +53,11 @@ const RegisterForm = () => {
     const data = await authClient.signIn.social(
       {
         provider: "github",
+         callbackURL: "/workflows", 
       },
       {
         onSuccess: () => {
-          router.push("/");
+          router.push("/workflows");
         },
         onError: () => {
           toast.error("Something Went Wrong");
@@ -67,7 +68,8 @@ const RegisterForm = () => {
   const SignUpGoogle = async () => {
     const data = await authClient.signIn.social(
       {
-        provider: "google",
+        provider: "google", 
+         callbackURL: "/", 
       },
       {
         onSuccess: () => {
