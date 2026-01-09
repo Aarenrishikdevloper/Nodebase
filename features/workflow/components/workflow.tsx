@@ -1,5 +1,5 @@
 "use client";
-import { EmptyView, EntityContainer, EntityHeaders, EntityItem, EntityList, EntityPagination, EntitySearch, LoadingView } from "@/components/ui/entity-view";
+import { EmptyView, EntityContainer, EntityHeaders, EntityItem, EntityList, EntityPagination, EntitySearch, ErroView, LoadingView } from "@/components/ui/entity-view";
 import React from "react";
 import { useCreateWorkFlow, useRemoveWorkflow, useSuspenseWorkflows } from "../hooks/use-workflow";
 import { useRouter } from "next/navigation";
@@ -129,4 +129,7 @@ export const WorkflowPagination =()=>{
        onPageChange={(page)=>setParams({...params, page})}
     />
   )
+}   
+export const WokflowError =()=>{
+   return <ErroView message="Error Loading Workflow...."/>
 }

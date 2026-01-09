@@ -1,7 +1,7 @@
 import { title } from "process";
 import { Button } from "./button";
 import Link from "next/link";
-import { Loader2Icon, MoreVerticalIcon, PackageOpenIcon, Plus, PlusIcon, SearchIcon, TrashIcon } from "lucide-react";
+import { AlertTriangleIcon, Loader2Icon, MoreVerticalIcon, PackageOpenIcon, Plus, PlusIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardTitle } from "./card";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "./dropdown-menu";
@@ -294,4 +294,11 @@ export const EntityPagination =({
 
     </div>
    )
+} 
+export const ErroView =({message}:{message:string})=>{
+  return  <div className="flex justify-center items-center  h-full flex-1 flex-col gap-y-4">  
+    <AlertTriangleIcon className="size-6    text-primary"/>   
+    {!!message && <p className="text-sm  text-muted-foreground">{message}</p>}
+
+  </div>
 }
