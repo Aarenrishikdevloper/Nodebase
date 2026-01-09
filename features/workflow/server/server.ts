@@ -1,11 +1,11 @@
 import { PAGINATION } from "@/config/constants";
 import { db } from "@/lib/db";
-import { nodes, workflows } from "@/lib/db/schema";
+import { connections, nodes, workflows } from "@/lib/db/schema";
 
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 
 import { count, and, desc, eq, ilike } from "drizzle-orm";
-import z from "zod";
+import z, { string } from "zod";
 export const workflowRouter = createTRPCRouter({
   create: protectedProcedure.mutation(async ({ ctx }) => {
     if (!ctx.auth?.user?.id) {
@@ -93,6 +93,42 @@ export const workflowRouter = createTRPCRouter({
           eq(workflows.userId, ctx.auth.user.id)
         )
       )
+    }),
+    getone:protectedProcedure.input(z.object({id:z.string()})).query(async({ctx,input})=>{
+        return await db.transaction(async(tx)=>{
+          const[workflow] = await tx.select().from(workflows).where(
+            and(
+              eq(workflows.id, input.id),  
+              eq(workflows.userId, ctx.auth.user.id)
+            )
+          )  
+          if(!workflow){
+            throw new Error("Workflow not found")
+          }   
+          const workflowNodes =await tx.select().from(nodes).where(eq(nodes.workflowId, workflow.id))    
+          const worlflowConnection = await tx.select().from(connections).where(eq(connections.workflowId,workflow.id))   
+          return{
+            ...workflow,  
+            nodes:workflowNodes,  
+            connection:worlflowConnection
+          }
+        })   
+        
+    }), 
+    updateName:protectedProcedure.input(
+      z.object({id:z.string(), name:z.string().min(1)})
+    ).mutation(async({ctx,input})=>{
+      const updated = await db.update(workflows).set({name:input.name, updatedAt:new Date()}).where(
+        and(
+          eq(workflows.id, input.id),  
+          eq(workflows.userId, ctx.auth.user.id)      
+
+        )
+      ).returning();  
+      if(updated.length === 0){
+         throw new Error("Workflow not found or not authorised");
+      }  
+      return updated[0]    
     })
 });    
 
