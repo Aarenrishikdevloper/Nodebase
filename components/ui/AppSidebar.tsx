@@ -24,10 +24,12 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { useHasActiveSubscription } from "@/features/subscription/hooks/use-subscription";
 
 const AppSidebar = () => {
   const pathname = usePathname(); 
-  const router = useRouter();
+  const router = useRouter();   
+  const {hasActiveSubscription, isLoading} = useHasActiveSubscription()
   // Define menu groups
   const menuGroups = [
     {
@@ -92,17 +94,23 @@ const AppSidebar = () => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuButton
+           {!hasActiveSubscription && !isLoading &&(
+             <SidebarMenuButton
             tooltip={"Update to Pro"}
-            className="gap-x-4 h-10 px-4"
+            className="gap-x-4 h-10 px-4"  
+            onClick={()=>authClient.checkout({
+              slug:"Pro"
+            })}
           >
             <StarIcon className="h-4 w-4" />
             <span>Upgrade to Pro</span>
           </SidebarMenuButton>
+           )}
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip={"Billing Portal"}
-              className="gap-x-4 h-10 px-4"
+              className="gap-x-4 h-10 px-4"  
+              onClick={()=>authClient.customer.portal()}
             >
               <CreditCardIcon className="h-4 w-4" />
               <span>Billing Portal</span>
