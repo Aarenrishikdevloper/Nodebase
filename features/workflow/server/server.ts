@@ -1,17 +1,38 @@
 import { PAGINATION } from "@/config/constants";
 import { db } from "@/lib/db";
 import { connections, nodes, workflows } from "@/lib/db/schema";
+import { polarClient } from "@/lib/polar";
+import { getCustomerStateSafe } from "@/lib/utils";
 
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
+import { TRPCError } from "@trpc/server";
 
 import { count, and, desc, eq, ilike } from "drizzle-orm";
 import z, { string } from "zod";
+
 export const workflowRouter = createTRPCRouter({
   create: protectedProcedure.mutation(async ({ ctx }) => {
     if (!ctx.auth?.user?.id) {
       throw new Error("User not authenticated");
     }
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async (tx) => {   
+      const customer  = await getCustomerStateSafe(ctx.auth.user.id)
+      const isPremium = customer?.activeSubscriptions.some(
+        (sub)=>sub.status === "active"
+      )??false    
+      console.log(isPremium);
+      if(!isPremium){
+        const existingWorkflows = await tx.select({id:workflows.id}).from(workflows).where(
+          eq(workflows.userId,ctx.auth.user.id)
+        ).limit(5)    
+        if(existingWorkflows.length >=5){ 
+          
+           throw new TRPCError({
+             code:"FORBIDDEN",  
+             message:"Free plan alows only 5 workflows. Upgrade to premium."
+           })   
+        }
+      }
       const [workflow] = await tx
         .insert(workflows)
         .values({
@@ -70,7 +91,8 @@ export const workflowRouter = createTRPCRouter({
             ),
           )
           .then((rows) => Number(rows[0].count)),
-      ]);
+      ]);  
+      
       const totalPages = Math.ceil(totalCount / pageSize);
       const hasNextPages = page < totalPages;
       const haspreviousPage = page > 1;

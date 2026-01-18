@@ -29,7 +29,8 @@ import { useHasActiveSubscription } from "@/features/subscription/hooks/use-subs
 const AppSidebar = () => {
   const pathname = usePathname(); 
   const router = useRouter();   
-  const {hasActiveSubscription, isLoading} = useHasActiveSubscription()
+  const {hasActiveSubscription, isLoading} = useHasActiveSubscription()  
+  console.log(hasActiveSubscription);
   // Define menu groups
   const menuGroups = [
     {

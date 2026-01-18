@@ -9,6 +9,8 @@ import  {formatDistanceToNow} from 'date-fns'
 import { WorkflowIcon } from "lucide-react";
 import { useWorkflowParams } from "../hooks/use-workflow-params";
 import { useEntitySearch } from "../hooks/use-search";
+import { useHasActiveSubscription, useSubscription } from "@/features/subscription/hooks/use-subscription";
+import { useUpgrade } from "@/hooks/use-upgrade";
 //--- Workflow Container -----
 export const WorkFlowContainer = ({
   children,
@@ -21,20 +23,24 @@ export const WorkFlowContainer = ({
 };
 //WorkflowHeader
 export const WorkflowHeader = ({ disabled }: { disabled?: boolean }) => {
-  const createWorkflow = useCreateWorkFlow();
+const createWorkflow = useCreateWorkFlow()
+  const {model, handleError} = useUpgrade()
   const router = useRouter();
-  const handleCreate = () => {
+  const handleCreate = () => {  
+     
     createWorkflow.mutate(undefined, {
       onSuccess: (data) => {
         router.push(`/workflow/${data.id}`);
       },
-      onError: (error) => {
+      onError: (error) => { 
+        handleError(error)
         console.log(error);
       },
     });
   };
   return (
-    <>
+    <>   
+    {model &&  <div>{model}</div>}
       <EntityHeaders
         title="Workflows"
         description="Create and mange your WorkSpaces"
