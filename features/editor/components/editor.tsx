@@ -1,12 +1,16 @@
 'use client';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { ErroView, LoadingView } from "@/components/ui/entity-view";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useSuspenseWorkflow, useUpdateWorkflowName } from "@/features/workflow/hooks/use-workflow";
+import { Background, Controls, MiniMap, ReactFlow } from "@xyflow/react";
+import { useSetAtom } from "jotai";
 import { SaveIcon, Workflow } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { editorAtom } from "../store/atom";
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
     return <div className="ml-auto">
         <Button
@@ -110,4 +114,32 @@ export const EditorNameInput =({workflowId}:{workflowId:string})=>{
            {woekflow.name}
         </BreadcrumbItem>
     )
+}      
+
+export const EditorLoading =()=>{
+    return <LoadingView message="Loading editor...."/>
+}       
+export const EditorError =()=>{
+    return <ErroView message="Error loading editor"/>
+}  
+
+export const Editor = ({workflowId}:{workflowId:string})=>{   
+    const {data:woekflow} = useSuspenseWorkflow(workflowId)  
+    const setEditor = useSetAtom(editorAtom)
+    return <div className="size-full">     
+       <ReactFlow   
+          fitView 
+          snapGrid={[10,10]}    
+          snapToGrid 
+          panOnScroll    
+          panOnDrag={false}     
+          selectionOnDrag   
+          onInit={setEditor}
+       >
+          <Background/>  
+          <Controls/>  
+          <MiniMap/>
+       </ReactFlow>
+
+    </div>
 }

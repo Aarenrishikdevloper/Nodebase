@@ -1,4 +1,5 @@
-import { EditorHeader } from '@/features/editor/components/editor'
+import { ErroView } from '@/components/ui/entity-view'
+import { Editor, EditorError, EditorHeader, EditorLoading } from '@/features/editor/components/editor'
 import { prefetchWorkflow } from '@/features/workflow/server/prefetch'
 import { requireAuth } from '@/lib/auth-utils'
 import { HydrateClient } from '@/trpc/server'
@@ -15,10 +16,13 @@ const Page = async({params}:PageProps) => {
     prefetchWorkflow(workflowId)
   return (
     <HydrateClient>
-        <ErrorBoundary fallback={<p>Something Went Wrong</p>}>
-          <Suspense fallback={<p>loading...</p>}>    
+        <ErrorBoundary fallback={<EditorError/>}>
+          <Suspense fallback={<EditorLoading/>}>    
             <EditorHeader workflowId={workflowId}/>
+            <main className='flex-1'>   
+              < Editor workflowId={workflowId}/>
 
+            </main>
           </Suspense>
         </ErrorBoundary>
     </HydrateClient>

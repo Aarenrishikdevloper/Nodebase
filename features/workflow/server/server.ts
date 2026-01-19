@@ -6,7 +6,7 @@ import { getCustomerStateSafe } from "@/lib/utils";
 
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-
+import type {Node, Edge} from "@xyflow/react"
 import { count, and, desc, eq, ilike } from "drizzle-orm";
 import z, { string } from "zod";
 
