@@ -5,12 +5,15 @@ import { ErroView, LoadingView } from "@/components/ui/entity-view";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useSuspenseWorkflow, useUpdateWorkflowName } from "@/features/workflow/hooks/use-workflow";
-import { Background, Controls, MiniMap, ReactFlow } from "@xyflow/react";
+import { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, MiniMap, NodeChange, ReactFlow , type Node } from "@xyflow/react";
 import { useSetAtom } from "jotai";
 import { SaveIcon, Workflow } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";  
+import '@xyflow/react/dist/style.css';
+
 import { editorAtom } from "../store/atom";
+import { nodeComponet } from "@/config/node-componets";
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
     return <div className="ml-auto">
         <Button
@@ -124,21 +127,34 @@ export const EditorError =()=>{
 }  
 
 export const Editor = ({workflowId}:{workflowId:string})=>{   
-    const {data:woekflow} = useSuspenseWorkflow(workflowId)  
-    const setEditor = useSetAtom(editorAtom)
-    return <div className="size-full">     
-       <ReactFlow   
+    const {data:woekflow} = useSuspenseWorkflow(workflowId)    
+    const[nodes, setnodes] = useState<Node[]>(woekflow.node)  
+    const[edges, setedges] = useState<Edge[]>(woekflow.edges)
+    const setEditor = useSetAtom(editorAtom)  
+    const onNodeChange = useCallback((change:NodeChange[])=>setnodes((nodeSnapShot)=>applyNodeChanges(change, nodeSnapShot)),[])   
+    const  onEdgeChange = useCallback((change:EdgeChange[])=>setedges((edgesSnapshot)=>applyEdgeChanges(change, edgesSnapshot)),[]) 
+    const onConnect = useCallback((params:Connection)=>setedges((edgeSnapShot)=>addEdge(params, edgeSnapShot)),[])    
+    return <div className="h-full w-full">     
+       <ReactFlow     
+          nodes={nodes}    
+          edges={edges}     
+          nodeTypes={nodeComponet}
+          onNodesChange={onNodeChange}    
+          onEdgesChange={onEdgeChange}   
+          onConnect={onConnect}
           fitView 
           snapGrid={[10,10]}    
           snapToGrid 
           panOnScroll    
           panOnDrag={false}     
           selectionOnDrag   
-          onInit={setEditor}
+          onInit={setEditor} 
+          
        >
           <Background/>  
-          <Controls/>  
+          <Controls/>    
           <MiniMap/>
+          
        </ReactFlow>
 
     </div>

@@ -127,12 +127,25 @@ export const workflowRouter = createTRPCRouter({
           if(!workflow){
             throw new Error("Workflow not found")
           }   
-          const workflowNodes =await tx.select().from(nodes).where(eq(nodes.workflowId, workflow.id))    
-          const worlflowConnection = await tx.select().from(connections).where(eq(connections.workflowId,workflow.id))   
+          const workflowNodes =await tx.select().from(nodes).where(eq(nodes.workflowId, workflow.id))      
+          const node:Node[] = workflowNodes.map((node:any)=>({
+             id:node.id,  
+             type:node.type, 
+             position:node.position as {x:number; y:number}, 
+             data:(node.data as Record<string, unknown>)
+          }))
+          const worlflowConnection = await tx.select().from(connections).where(eq(connections.workflowId,workflow.id))    
+          const edges:Edge[]  = worlflowConnection.map((connection:any)=>({
+            id:connection.id,  
+             source:connection.fromNodeId, 
+             target:connection.toNodeId,  
+             sourceHandle:connection.fromOutput,  
+             targetHandle:connection.toInput
+          }))
           return{
             ...workflow,  
-            nodes:workflowNodes,  
-            connection:worlflowConnection
+            node:node,  
+            edges:edges
           }
         })   
         
