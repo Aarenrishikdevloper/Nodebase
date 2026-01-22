@@ -128,7 +128,7 @@ export const EditorError =()=>{
 
 export const Editor = ({workflowId}:{workflowId:string})=>{   
     const {data:woekflow} = useSuspenseWorkflow(workflowId)    
-    const[nodes, setnodes] = useState<Node[]>(woekflow.node)  
+    const[nodes, setnodes] = useState<Node[]>(woekflow.nodes)  
     const[edges, setedges] = useState<Edge[]>(woekflow.edges)
     const setEditor = useSetAtom(editorAtom)  
     const onNodeChange = useCallback((change:NodeChange[])=>setnodes((nodeSnapShot)=>applyNodeChanges(change, nodeSnapShot)),[])   

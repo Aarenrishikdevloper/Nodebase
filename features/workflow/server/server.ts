@@ -6,7 +6,7 @@ import { getCustomerStateSafe } from "@/lib/utils";
 
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import type {Node, Edge} from "@xyflow/react"
+import type { Node, Edge } from "@xyflow/react"
 import { count, and, desc, eq, ilike } from "drizzle-orm";
 import z, { string } from "zod";
 
@@ -15,22 +15,22 @@ export const workflowRouter = createTRPCRouter({
     if (!ctx.auth?.user?.id) {
       throw new Error("User not authenticated");
     }
-    return await db.transaction(async (tx) => {   
-      const customer  = await getCustomerStateSafe(ctx.auth.user.id)
+    return await db.transaction(async (tx) => {
+      const customer = await getCustomerStateSafe(ctx.auth.user.id)
       const isPremium = customer?.activeSubscriptions.some(
-        (sub)=>sub.status === "active"
-      )??false    
+        (sub) => sub.status === "active"
+      ) ?? false
       console.log(isPremium);
-      if(!isPremium){
-        const existingWorkflows = await tx.select({id:workflows.id}).from(workflows).where(
-          eq(workflows.userId,ctx.auth.user.id)
-        ).limit(5)    
-        if(existingWorkflows.length >=5){ 
-          
-           throw new TRPCError({
-             code:"FORBIDDEN",  
-             message:"Free plan alows only 5 workflows. Upgrade to premium."
-           })   
+      if (!isPremium) {
+        const existingWorkflows = await tx.select({ id: workflows.id }).from(workflows).where(
+          eq(workflows.userId, ctx.auth.user.id)
+        ).limit(5)
+        if (existingWorkflows.length >= 5) {
+
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Free plan alows only 5 workflows. Upgrade to premium."
+          })
         }
       }
       const [workflow] = await tx
@@ -66,7 +66,7 @@ export const workflowRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const { page, pageSize, search } = input;
-      const offset = (page - 1) * pageSize;  
+      const offset = (page - 1) * pageSize;
       const searchtrime = search?.trim()
       const [items, totalCount] = await Promise.all([
         db
@@ -91,8 +91,8 @@ export const workflowRouter = createTRPCRouter({
             ),
           )
           .then((rows) => Number(rows[0].count)),
-      ]);  
-      
+      ]);
+
       const totalPages = Math.ceil(totalCount / pageSize);
       const hasNextPages = page < totalPages;
       const haspreviousPage = page > 1;
@@ -106,64 +106,69 @@ export const workflowRouter = createTRPCRouter({
         haspreviousPage,
       };
     }),
-    remove:protectedProcedure 
-    .input(z.object({id:z.string()}))   
-    .mutation(async({ctx, input})=>{
+  remove: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
       return await db.delete(workflows).where(
         and(
-          eq(workflows.id, input.id), 
+          eq(workflows.id, input.id),
           eq(workflows.userId, ctx.auth.user.id)
         )
       )
     }),
-    getone:protectedProcedure.input(z.object({id:z.string()})).query(async({ctx,input})=>{
-        return await db.transaction(async(tx)=>{
-          const[workflow] = await tx.select().from(workflows).where(
-            and(
-              eq(workflows.id, input.id),  
-              eq(workflows.userId, ctx.auth.user.id)
-            )
-          )  
-          if(!workflow){
-            throw new Error("Workflow not found")
-          }   
-          const workflowNodes =await tx.select().from(nodes).where(eq(nodes.workflowId, workflow.id))      
-          const node:Node[] = workflowNodes.map((node:any)=>({
-             id:node.id,  
-             type:node.type, 
-             position:node.position as {x:number; y:number}, 
-             data:(node.data as Record<string, unknown>)
-          }))
-          const worlflowConnection = await tx.select().from(connections).where(eq(connections.workflowId,workflow.id))    
-          const edges:Edge[]  = worlflowConnection.map((connection:any)=>({
-            id:connection.id,  
-             source:connection.fromNodeId, 
-             target:connection.toNodeId,  
-             sourceHandle:connection.fromOutput,  
-             targetHandle:connection.toInput
-          }))
-          return{
-            ...workflow,  
-            node:node,  
-            edges:edges
-          }
-        })   
-        
-    }), 
-    updateName:protectedProcedure.input(
-      z.object({id:z.string(), name:z.string().min(1)})
-    ).mutation(async({ctx,input})=>{
-      const updated = await db.update(workflows).set({name:input.name, updatedAt:new Date()}).where(
+  getone: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    return Promise.all([
+      db.select().from(workflows).where(
         and(
-          eq(workflows.id, input.id),  
-          eq(workflows.userId, ctx.auth.user.id)      
-
+          eq(workflows.id, input.id),
+          eq(workflows.userId, ctx.auth.user.id)
         )
-      ).returning();  
-      if(updated.length === 0){
-         throw new Error("Workflow not found or not authorised");
-      }  
-      return updated[0]    
-    })
-});    
+      ),
+      db.select().from(nodes).where(eq(nodes.workflowId, input.id)),
+      db.select().from(connections).where(eq(connections.workflowId, input.id))
+    ]).then(([workflowResult, workflowNodes, WorkflowConnections]) => {
+      const [workflow] = workflowResult;
+      if (!workflow) {
+        throw new Error("Workflow not found")
+      }
+      const nodes: Node[] = workflowNodes.map((node: any) => ({
+        id: node.id,
+        type: node.type,
+        position: node.position as { x: number, y: number },
+        data: (node.data as Record<string, unknown>)
+      }))
+      const edges: Edge[] = WorkflowConnections.map((connection: any) => ({
+        id: connection.id,
+        source: connection.fromNodeId,
+        target: connection.toNodeId,
+        sourceHandle: connection.fromOutput,
+        targetHandle: connection.toInput
+
+      }))  
+      return{
+         ...workflow,  
+         nodes:nodes,  
+         edges:edges
+      }
+       }
+
+    )
+
+  }),
+  updateName: protectedProcedure.input(
+    z.object({ id: z.string(), name: z.string().min(1) })
+  ).mutation(async ({ ctx, input }) => {
+    const updated = await db.update(workflows).set({ name: input.name, updatedAt: new Date() }).where(
+      and(
+        eq(workflows.id, input.id),
+        eq(workflows.userId, ctx.auth.user.id)
+
+      )
+    ).returning();
+    if (updated.length === 0) {
+      throw new Error("Workflow not found or not authorised");
+    }
+    return updated[0]
+  })
+});
 
