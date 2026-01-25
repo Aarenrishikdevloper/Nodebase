@@ -5,15 +5,16 @@ import { ErroView, LoadingView } from "@/components/ui/entity-view";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useSuspenseWorkflow, useUpdateWorkflowName } from "@/features/workflow/hooks/use-workflow";
-import { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, MiniMap, NodeChange, ReactFlow , type Node } from "@xyflow/react";
+import { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, MiniMap, NodeChange, Panel, ReactFlow , type Node } from "@xyflow/react";
 import { useSetAtom } from "jotai";
-import { SaveIcon, Workflow } from "lucide-react";
+import { PlusIcon, SaveIcon, Workflow } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";  
+import { memo, useCallback, useEffect, useEffectEvent, useRef, useState } from "react";  
 import '@xyflow/react/dist/style.css';
 
 import { editorAtom } from "../store/atom";
 import { nodeComponet } from "@/config/node-componets";
+import { NodeSelector } from "@/components/ui/NodeSelector";
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
     return <div className="ml-auto">
         <Button
@@ -125,7 +126,18 @@ export const EditorLoading =()=>{
 export const EditorError =()=>{
     return <ErroView message="Error loading editor"/>
 }  
+export const AddButton =memo(()=>{
+    const[selectedopen, setSelectedopen] = useState(false)  
+   return(
+      <NodeSelector open={selectedopen} onOpenChange={setSelectedopen}>  
+      <Button variant={"outline"} className="bg-background" onClick={()=>setSelectedopen(true)}>
+                <PlusIcon/>
+      </Button>
 
+      </NodeSelector>
+   )
+})  
+AddButton.displayName = "AddNodeButton"
 export const Editor = ({workflowId}:{workflowId:string})=>{   
     const {data:woekflow} = useSuspenseWorkflow(workflowId)    
     const[nodes, setnodes] = useState<Node[]>(woekflow.nodes)  
@@ -153,7 +165,10 @@ export const Editor = ({workflowId}:{workflowId:string})=>{
        >
           <Background/>  
           <Controls/>    
-          <MiniMap/>
+          <MiniMap/> 
+          <Panel position={'top-right'}>
+            <AddButton/>
+          </Panel>
           
        </ReactFlow>
 
