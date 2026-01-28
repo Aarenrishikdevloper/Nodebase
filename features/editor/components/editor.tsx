@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ErroView, LoadingView } from "@/components/ui/entity-view";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useSuspenseWorkflow, useUpdateWorkflowName } from "@/features/workflow/hooks/use-workflow";
+import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/features/workflow/hooks/use-workflow";
 import { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, MiniMap, NodeChange, Panel, ReactFlow , type Node } from "@xyflow/react";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { PlusIcon, SaveIcon, Workflow } from "lucide-react";
 import Link from "next/link";
 import { memo, useCallback, useEffect, useEffectEvent, useRef, useState } from "react";  
@@ -15,10 +15,24 @@ import '@xyflow/react/dist/style.css';
 import { editorAtom } from "../store/atom";
 import { nodeComponet } from "@/config/node-componets";
 import { NodeSelector } from "@/components/ui/NodeSelector";
-export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
+export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => { 
+    const editor = useAtomValue(editorAtom); 
+    const saveWorkflow = useUpdateWorkflow() 
+    const handleSave =()=>{
+        if(!editor)  return   
+        const nodesInput = editor.getNodes().map(node=>({...node})) 
+        const edges = editor.getEdges().map(edge=>({...edge}))      
+        saveWorkflow.mutate({ 
+            id:workflowId,
+            nodesInput, 
+            edges
+        })
+    }
     return <div className="ml-auto">
         <Button
-            size={'sm'}
+            size={'sm'} 
+            onClick={handleSave}   
+            disabled={saveWorkflow.isPending}
 
         >
             <SaveIcon className="size-4" />

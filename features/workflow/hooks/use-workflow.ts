@@ -2,6 +2,7 @@ import { useTRPC } from "@/trpc/cleint";
 import { useMutation, useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useWorkflowParams } from "./use-workflow-params";
+import { error } from "console";
 export const useSuspenseWorkflows = () => {
   const trpc = useTRPC();
   const [params] = useWorkflowParams();
@@ -61,4 +62,21 @@ export const useUpdateWorkflowName =()=>{
       }
      })
    )
+}  
+export const useUpdateWorkflow =()=>{
+  const  queryClient  = useQueryClient() 
+  const trpc = useTRPC() 
+  return useMutation(
+    trpc.workflow.update.mutationOptions({
+      onSuccess:(data)=>{
+        toast.success(`Workflow data  Saved Sucessfully`); 
+        queryClient.invalidateQueries(trpc.workflow.getMany.queryOptions({})); 
+        queryClient.invalidateQueries(trpc.workflow.getone.queryOptions({id:data.id}))
+      }, 
+      onError:(error)=>{ 
+        console.log(error);
+        toast.success("Failed to save Workflow data")
+      }
+    })
+  )
 }

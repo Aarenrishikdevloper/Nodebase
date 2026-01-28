@@ -6,7 +6,7 @@ import { getCustomerStateSafe } from "@/lib/utils";
 
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import type { Node, Edge } from "@xyflow/react"
+import { type Node, type Edge, Position } from "@xyflow/react"
 import { count, and, desc, eq, ilike } from "drizzle-orm";
 import z, { string } from "zod";
 
@@ -144,13 +144,13 @@ export const workflowRouter = createTRPCRouter({
         sourceHandle: connection.fromOutput,
         targetHandle: connection.toInput
 
-      }))  
-      return{
-         ...workflow,  
-         nodes:nodes,  
-         edges:edges
+      }))
+      return {
+        ...workflow,
+        nodes: nodes,
+        edges: edges
       }
-       }
+    }
 
     )
 
@@ -169,6 +169,82 @@ export const workflowRouter = createTRPCRouter({
       throw new Error("Workflow not found or not authorised");
     }
     return updated[0]
+  }),
+  update: protectedProcedure.input(
+    z.object({
+      id: z.string(),
+      nodesInput: z.array(
+        z.object({
+          id: z.string(),
+          type: z.string().nullish(),
+          position: z.object({
+            x: z.number(),
+            y: z.number(),
+          }),
+          data: z.record(z.string(), z.any()).optional()
+        })
+      ),
+      edges: z.array(
+        z.object({
+          source: z.string(),
+          target: z.string(),
+          sourceHandle: z.string().nullish(),
+          targetHandle: z.string().nullish(),
+
+        })
+      )
+    })
+  ).mutation(async ({ ctx, input }) => {
+    const { edges, id, nodesInput } = input
+    const userId = ctx.auth.user.id
+    return await db.transaction(async (tx) => {
+      const [workflow] = await tx.select().from(workflows).where(
+        and(
+          eq(workflows.id, id),
+          eq(workflows.userId, userId)
+        )
+      );
+      if (!workflow) {
+        throw new Error("Workflow not found or not authorized")
+      }
+      await tx.delete(nodes).where(
+        eq(nodes.workflowId, id)
+      )
+
+      if (nodesInput.length > 0) {
+        await tx.insert(nodes).values(
+          nodesInput.map((node) => ({
+            id: node.id,
+            workflowId: id,
+            name: node.type ?? "Unnamed Node", // or map to something nicer if you want
+            type: node.type as any, // cast if nodeTypeEnum complains
+            position: {
+              x: node.position.x,
+              y: node.position.y,
+            },
+            data: node.data ?? {},
+            updatedAt: new Date(),
+
+          }))
+
+        )
+      }
+      if (edges.length > 0) {
+        await tx.insert(connections).values(
+          edges.map((edge) => ({
+            workflowId: id,
+            fromNodeId: edge.source,
+            toNodeId: edge.target,
+          }))
+        )
+      } 
+      const [updateWorkflow] = await tx.update(workflows).set({updatedAt:new Date()}).where(eq(workflows.id, id)).returning({
+        id:workflows.id,  
+        name:workflows.name
+      }) 
+       return  updateWorkflow
+    }) 
+
   })
 });
 
