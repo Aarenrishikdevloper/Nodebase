@@ -12,8 +12,9 @@ export const ManualTriggerNode = memo((props:NodeProps)=>{
        <ManualTriggerDialog open={dialogopen} onOpenChange={setdialogOpen}/>      
        <BaseTriggerNode 
          {...props}   
-         icon={MousePointerIcon}  
-         name="when Clicking 'Execute workflow' "   
+         icon={MousePointerIcon}     
+         name="Manual Trigger"
+         description="when clicking execute workflow "   
          onSettings={handleOpenSetting} 
          onDoubleClick={handleOpenSetting}
        />

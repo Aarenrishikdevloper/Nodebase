@@ -1,23 +1,32 @@
-'use client'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { CopyIcon } from 'lucide-react'
 import { useParams } from 'next/navigation'
-
 import React from 'react'
+import { generateGoogleFormScript } from './utils'
 import toast from 'react-hot-toast'
-type props = {
-  open: boolean,
-  onOpenChange: (open: boolean) => void
+type props={
+    open:boolean,   
+    onOpenChange:(open:boolean)=>void
 }
-export const StripeTriggerDialog = ({ open, onOpenChange }: props) => {
-
+export const GoogleFormDialog = ({open,onOpenChange}:props) => {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   const params = useParams()
   const workflowId = params.workflowId as string
-  const webhookUrl = `${baseUrl}/api/webhooks/stripe?workflowId=${workflowId}`  
-  const copyToClipboard  = async()=>{
+  const webhookUrl = `${baseUrl}/api/webhooks/google-form?workflowId=${workflowId}` 
+  const hanldleGnerate = async()=>{
+       const script = generateGoogleFormScript(webhookUrl)   
+       try {
+           await navigator.clipboard.writeText(script) 
+           toast.success("Script Copied Sucessfully")
+       } catch (error) {
+            toast.error("Faiuled to copy Script to clipboard")
+    
+  }    
+  
+} 
+const copyToClipboard  = async()=>{
     try {
          await navigator.clipboard.writeText(webhookUrl)  
          toast.success("Webhook Url Sucessfully")
@@ -30,10 +39,10 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: props) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Stripe Trigger Configuration
+            Google Form  Configuration
           </DialogTitle>
           <DialogDescription>
-            Configure this webhook URl in your Stripe DashBoard to trigger  yhis Workflow on payment Satatus
+             Use this webhook Url  in your Googel Form's App Script to trigger  this workflow when a form is submitted
           </DialogDescription>
 
         </DialogHeader>
@@ -44,7 +53,7 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: props) => {
             </label>
             <div className='flex gap-2'>
               <Input id="webhook-url" value={webhookUrl} readOnly className='font-mono text-sm' />
-              <Button onClick={copyToClipboard} type={'button'} variant={'outline'} >
+              <Button type={'button'} variant={'outline'} onClick={copyToClipboard} >
                 <CopyIcon className='size-4' />
               </Button>
             </div>
@@ -55,14 +64,32 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: props) => {
               Setup instruction:
             </h4>
             <ol className='text-sm text-muted-foreground  space-y-1  list-decimal  list-inside'>
-              <li>Open your Stripe Dashboard</li>
-              <li>Go to Developers -&gt; Webhooks </li>
-              <li> Click "Add endpoint"</li>
-              <li>Pase the webhook URL above</li>
-              <li>Select events to listen for(e.g., payment_intent.succeeded) </li>
-              <li>Save and copy the signing secret </li>
+               <li>Open your Google Form</li>
+                            <li>Click the three dots menu -&gt; Script editor </li>
+                            <li> Copy and paste the script below</li>
+                            <li> Replace WEBHOOK_URL with your webhook URL above</li>
+                            <li>Save and click "Tirgger" -&gt; Add Trigger </li>
+                            <li>Choose: From from -&gt; On form submit -&gt; Save </li>
             </ol>
 
+          </div>  
+          <div className="rounded-lg bg-muted p-4 space-y-3">
+             <h4 className='font-medium text-sm'>
+                Google Apps Script:
+             </h4>  
+             <Button  
+              type={'button'} 
+              variant={'outline'}  
+              onClick={hanldleGnerate}        
+              
+             >
+                <CopyIcon className='size-4 mr-2'/> 
+                Copy Google App Script
+             </Button> 
+             <p className='text-xs  text-muted-foreground'>   
+                This script includes your webhook URl and handles form submission
+
+             </p>
           </div>
           <div className='rounded-lg  bg-muted  p-4 space-y-2'>
             <h4 className='font-medium text-sm'>
@@ -70,7 +97,7 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: props) => {
 
             </h4>
             < ul className='text-sm text-muted-foreground  space-y-1'>
-              <li>
+             <li>
                 <code className='bg-background px-1 py-0.5 rounded'>
                   {"{{stripe.amount}}"}
 
@@ -78,7 +105,7 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: props) => {
                 - Payment amount
 
               </li>
-              <li>
+              <li> 
                 <code className="bg-background px-1 py-0.5 rounded">
                   {"{{stripe.currency}}"}
                 </code>
@@ -110,6 +137,6 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: props) => {
         </div>
       </DialogContent>
 
-    </Dialog>
+    </Dialog> 
   )
 }
