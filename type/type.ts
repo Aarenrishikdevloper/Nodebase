@@ -9,4 +9,9 @@ export enum NodeType {
   OPENAI = "OPENAI",
   DISCORD = "DISCORD",
   SLACK = "SLACK",
+} 
+export enum CredentialsType {
+  GEMINI = "GEMINI",  
+  OPENAI = "OPENAI", 
+  DEEPSEEK ="DEEPSEEK"
 }

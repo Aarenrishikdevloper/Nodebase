@@ -5,29 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1766506560362,
-      "tag": "0000_messy_mysterio",
+      "when": 1769941045927,
+      "tag": "0000_lovely_manta",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1766669567772,
-      "tag": "0001_daily_major_mapleleaf",
+      "when": 1770020962573,
+      "tag": "0001_flaky_dark_phoenix",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1767243223071,
-      "tag": "0002_yielding_skullbuster",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1767280685533,
-      "tag": "0003_lowly_ezekiel",
+      "when": 1770361572259,
+      "tag": "0002_eager_naoko",
       "breakpoints": true
     }
   ]

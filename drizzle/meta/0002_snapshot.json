@@ -1,6 +1,6 @@
 {
-  "id": "25eca041-4c14-43e3-9b45-20baf69d3d8e",
-  "prevId": "7c9c62b7-be8a-40cb-ada6-66160aebac45",
+  "id": "52e85082-d32b-4685-8b88-7705509c3c85",
+  "prevId": "060903e6-34c4-494a-ab5c-9d44a7de12ca",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -220,6 +220,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "type": {
           "name": "type",
           "type": "credential_type",
@@ -233,6 +239,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -242,7 +254,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "credentials_user_id_user_id_fk": {
+          "name": "credentials_user_id_user_id_fk",
+          "tableFrom": "credentials",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -513,38 +539,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.users": {
-      "name": "users",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "varchar(255)",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.verification": {
       "name": "verification",
       "schema": "",
@@ -651,10 +645,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "workflows_user_id_users_id_fk": {
-          "name": "workflows_user_id_users_id_fk",
+        "workflows_user_id_user_id_fk": {
+          "name": "workflows_user_id_user_id_fk",
           "tableFrom": "workflows",
-          "tableTo": "users",
+          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
@@ -679,6 +673,7 @@
       "values": [
         "OPENAI",
         "ANTHROPIC",
+        "DEEPSEEK",
         "GEMINI"
       ]
     },

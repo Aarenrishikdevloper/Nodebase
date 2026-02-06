@@ -118,7 +118,8 @@ export const nodeTypeEnum = pgEnum("node_type", [
 
 export const credentialTypeEnum = pgEnum("credential_type", [
   "OPENAI",
-  "ANTHROPIC",
+  "ANTHROPIC",  
+  "DEEPSEEK",
   "GEMINI",
 ]);
 
@@ -153,9 +154,15 @@ export const workflows = pgTable("workflows", {
 export const credentials = pgTable("credentials", {
   id: varchar("id", { length: 255 })
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+    .$defaultFn(() => crypto.randomUUID()),  
+   name:text("name").notNull(),
   type: credentialTypeEnum("type").notNull(),
-  data: jsonb("data").notNull(),
+  data: jsonb("data").notNull(),  
+    userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+
+
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -259,4 +266,11 @@ export const connectionRelations = relations(connections, ({ one }) => ({
     references: [nodes.id],
     relationName: "toNode",
   }),
+}));
+export const credentialRelations = relations(credentials, ({ one, many }) => ({
+  user: one(user, {
+    fields: [credentials.userId],
+    references: [user.id],
+  }),
+  nodes: many(nodes),
 }));
