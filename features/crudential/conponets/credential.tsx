@@ -10,10 +10,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import * as z from 'zod'
-import { useCreateCredential } from "../hooks/use-credential";
+import { useCreateCredential, useSuspenseCredential, useUpdateCredentials } from "../hooks/use-credential";
 import { credentialTypeEnum } from "@/lib/db/schema";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { decrypt } from "@/lib/encryption";
+import { useUpgrade } from "@/hooks/use-upgrade";
+
 type CredentialType = (typeof credentialTypeEnum.enumValues)[number];
 
 const credentialTypeMeta: Record<
@@ -50,41 +53,64 @@ export const credentialTypeOptions = VISIBLE_TYPES.map((type) => ({
 }));
 const formSchema =  z.object(({
     name:z.string().min(1, "name Is required"), 
-    type:z.enum(CredentialsType),  
+    type:z.enum(credentialTypeEnum.enumValues),
     value:z.string().min(1, "API Key Is reequired")
 }))
     type FromValues = z.infer<typeof formSchema>  
-    
-export const CredentialForm =()=>{  
-  const createCredential  = useCreateCredential()  
-  const router = useRouter()
+interface  credentialFormProps{
+  intialdata?:{
+      id?:string; 
+      name:string; 
+      type:CredentialType,  
+      data:string
+  }
+}    
+export const CredentialForm =({intialdata}:credentialFormProps)=>{  
+  const createCredential  = useCreateCredential()   
+  const {model, handleError}  = useUpgrade()
+  const router = useRouter()  
+ 
     const form = useForm<FromValues>({
         resolver:zodResolver(formSchema), 
-        defaultValues:{
-            name:"", 
-            type:CredentialsType.OPENAI,  
-            value:''
+        defaultValues: {
+            name:intialdata?.name || "", 
+            type:intialdata?.type ||credentialTypeEnum.enumValues[0],
+            value:intialdata?.data || ""
         }
-    }) 
+    })  
+    const  updateCredential = useUpdateCredentials()
     const onSubmit =async(values:FromValues)=>{
-        await  createCredential.mutateAsync(values,{
+       if(isEdit && intialdata.id){
+         await updateCredential.mutateAsync({
+          id:intialdata.id,  
+          ...values
+         }
+           
+         )
+       }else{
+         await createCredential.mutateAsync(values,{
           onSuccess:(data)=>{
-
             router.push(`/credentials/${data.id}`)
-          },onError:(error)=>{
-             console.log(error);
+          }, 
+          onError:(error)=>{
+             console.log(error) 
+             handleError(error)
           }
-        })
-    }
+         })
+       }
+    }  
+    const isEdit = !!intialdata?.id
      
     return(
+      <> 
+      {model}
         <Card className="shadow-none">   
          <CardHeader>
             <CardTitle>
-                Create Credentials
+                {isEdit ? "Edit Credential" : "Create Credentials" }
             </CardTitle> 
             <CardDescription>
-                Add a new API Key or credential  to your account
+                {isEdit ?"Update your new API key or credential details":"Add a new API Key or credential  to your account"}
             </CardDescription>
          </CardHeader>  
          <CardContent>
@@ -159,8 +185,8 @@ export const CredentialForm =()=>{
                     )}
                   />      
                   <div className="flex gap-4">  
-                     <Button type={'submit'} >  
-                        Create
+                     <Button type={'submit'}  disabled={createCredential.isPending || updateCredential.isPending} >  
+                        {isEdit ?"Update":"Create"}
 
                      </Button>    
                      <Button type={'button'} variant={'outline'} asChild>  
@@ -178,6 +204,15 @@ export const CredentialForm =()=>{
             </Form>
          </CardContent>
 
-        </Card>
+        </Card> 
+        </>
     )
 }
+export const CredentialView =({id}:{id:string})=>{ 
+  const {data:credential} = useSuspenseCredential(id)
+  return <CredentialForm   intialdata={{
+        id: credential.id,
+        name: credential.name,
+        type: credential.type,
+        data: String(credential.data)}}/>
+}           
