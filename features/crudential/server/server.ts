@@ -146,5 +146,19 @@ export const credentialsRoute  = createTRPCRouter({
             }
         }) 
         return updateCreddential
+    }), 
+    getByType:protectedProcedure.input(
+        z.object({
+            type:z.enum(CredentialsType)
+        })
+    ).query(async({input,ctx})=>{
+        const{type} = input  
+        const items = await db.select().from(credentials).where(
+            and(
+                eq(credentials.type, type), 
+                eq(credentials.userId, ctx.auth.user.id)
+            )
+        ).orderBy(desc(credentials.updatedAt))   
+        return  items
     })
 })  

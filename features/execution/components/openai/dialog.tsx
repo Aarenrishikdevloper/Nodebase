@@ -1,0 +1,195 @@
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/ui/dialog';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useCredentialsByType } from '@/features/crudential/hooks/use-credential';
+import { CredentialsType } from '@/type/type';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogTitle } from '@radix-ui/react-dialog';
+import Image from 'next/image';
+
+import React from 'react'
+import { useForm } from 'react-hook-form';
+import z from 'zod';
+import { OpenAiNode } from './node';
+export const formSchema = z.object({
+  variableName: z
+    .string()
+    .min(1, {
+      message: "variable name is required",
+    })
+    .regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/, {
+      message:
+        "Variable name must start with a letter or underscore and contain only letters,numbers and underscores",
+    }),
+  credentialId:z.string().min(1,"Credential is required") ,
+  systemPrompt: z.string().optional(),
+  userPrompt: z.string().min(1, "User Prompt Required"),
+});
+
+export type anthropciFormValues = z.infer<typeof formSchema>;
+
+export interface Props {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (value: z.infer<typeof formSchema>) => void;
+  defaultValues?: Partial<anthropciFormValues>;
+}
+
+
+const OepnAIDaialog = ({
+    open, 
+    onOpenChange, 
+    onSubmit, 
+    defaultValues
+}:Props) => {  
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver:zodResolver(formSchema),  
+    defaultValues:{
+       variableName:defaultValues?.variableName || '',  
+       credentialId:defaultValues?.credentialId || "",  
+       systemPrompt:defaultValues?.systemPrompt || '',  
+       userPrompt:defaultValues?.userPrompt || '',
+    }
+  }) 
+  const watchVariableName = form.watch("variableName") || "myDeepseekAPI"   
+  const {data:credentials, isLoading:isloadingCredential} = useCredentialsByType(CredentialsType.DEEPSEEK)
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>    
+       <DialogContent> 
+        <DialogHeader>
+           <DialogTitle>OpenAI Configuration</DialogTitle>    
+
+        </DialogHeader>   
+        <Form {...form}>    
+          <form className=' space-y-8 mt-4'>
+                <FormField
+                    control={form.control}
+                    name="variableName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Variable Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="myApiCall"
+                            {...field} 
+                            value={field.value || ""}   
+                          />
+                        </FormControl>  
+                        <FormDescription>
+                           Use this name to reference the result in the other node:{" "}   
+                           {"  "}  
+                           {`{{${watchVariableName}.text}}`}
+                        </FormDescription>
+                        
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />  
+                 <FormField
+                    control={form.control}
+                    name="credentialId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>OpenAI Credentials</FormLabel>
+                        <Select  onValueChange={field.onChange} defaultValue={field.value} disabled={isloadingCredential  || !credentials?.length}>         
+                             <FormControl>
+                             <SelectTrigger className="w-full">    
+                                <SelectValue/>
+
+                             </SelectTrigger>
+                          </FormControl>       
+                          <SelectContent>
+                            {credentials?.map((option)=>(
+                                <SelectItem key={option.id} value={option.id}>     
+                                   <div className=" flex items-center gap-2">   
+                                     <Image
+                                       src={'/deepseek.svg'}   
+                                       alt={"logo"}  
+                                       height={16}  
+                                       width={16}
+                                     />
+                                     {option.name}
+
+                                   </div>
+
+                                </SelectItem>
+                            ))}
+                          </SelectContent>
+
+                        </Select>
+
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}   
+                  />
+                <FormField
+                    control={form.control}
+                    name="variableName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Syatem Prompt</FormLabel>
+                        <FormControl>
+                          <Textarea    
+                          className='min-h-[80px] font-mono text-sm'
+                           placeholder='You are  a helpful assistant'
+                            {...field} 
+                            value={field.value || ""}   
+                          />
+                        </FormControl>  
+                        <FormDescription>
+                          Sets the behaviour of the assistant.Use  {"{{variables}}"} for    
+                          simple values or {"{{json variable}}"} to strignofy object
+                        </FormDescription>
+                        
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />         
+                     <FormField
+                    control={form.control}
+                    name="variableName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>User  Prompt</FormLabel>
+                        <FormControl>
+                          <Textarea    
+                          className='min-h-[120px] font-mono text-sm'
+                           placeholder='Summarize  this text:{{json httpResponse.data}}'
+                            {...field} 
+                            value={field.value || ""}   
+                          />
+                        </FormControl>  
+                        <FormDescription>
+                          The propmt to send to the AI,Use  {"{{variables}}"} for    
+                          simple values or {"{{json variable}}"} to strignofy object
+                        </FormDescription>
+                        
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />      
+                 <DialogFooter className='mt-4'>  
+                   <Button type={"submit"}>   
+                       Save
+                     
+                   </Button>
+                  </DialogFooter> 
+                        
+
+
+                  
+          </form>
+
+        </Form>
+           
+       </DialogContent>
+
+    </Dialog>
+  )
+}
+export default  OepnAIDaialog 

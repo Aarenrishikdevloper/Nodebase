@@ -1,3 +1,4 @@
+'use cleint';
 import { NodeToolbar, Position } from '@xyflow/react';
 import React, { ReactNode } from 'react'
 import { Button } from './ui/button';
@@ -23,11 +24,11 @@ export const Workflownode = ({
     <> 
        {showToolbar && (
          <NodeToolbar>
-            <Button size={'sm'} variant={'ghost'}>
+            <Button size={'sm'} variant={'ghost'} onClick={onSettings}>
                 <SettingsIcon className='size-4'/>  
 
             </Button>  
-            <Button size={'sm'} variant={'ghost'}>
+            <Button size={'sm'} variant={'ghost'} onClick={onDelete}>
                 <TrashIcon className='size-4'/>
             </Button>
          </NodeToolbar>

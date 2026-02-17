@@ -111,7 +111,8 @@ export const nodeTypeEnum = pgEnum("node_type", [
   "HTTP_REQUEST",
   "GOOGLE_FORM_TRIGGER",
   "STRIPE_TRIGGER",
-  "ANTHROPIC",
+  "ANTHROPIC", 
+  "DEEPSEEK",
   "GEMINI",
   "OPENAI",
 ]);

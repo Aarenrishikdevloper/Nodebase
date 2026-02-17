@@ -75,7 +75,7 @@ export const useUpdateWorkflow =()=>{
       }, 
       onError:(error)=>{ 
         console.log(error);
-        toast.success("Failed to save Workflow data")
+        toast.error("Failed to save Workflow data")
       }
     })
   )

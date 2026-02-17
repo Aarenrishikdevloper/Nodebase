@@ -1,7 +1,8 @@
 import { useTRPC } from "@/trpc/cleint";
-import { useMutation, useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast";
 import { useCredentialsParams } from "./use-credentials-params";
+import { CredentialsType } from "@/type/type";
 
 export const useCreateCredential =()=>{   
     const queryClient = useQueryClient(); 
@@ -61,4 +62,8 @@ export const useUpdateCredentials =()=>{
             }
         })
     )
-}
+}   
+ export const useCredentialsByType = (type:CredentialsType)=>{
+    const trpc = useTRPC(); 
+    return useQuery(trpc.credential.getByType.queryOptions({type}))
+ }
