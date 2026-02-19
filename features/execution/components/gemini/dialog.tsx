@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -7,10 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useCredentialsByType } from '@/features/crudential/hooks/use-credential';
 import { CredentialsType } from '@/type/type';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogTitle } from '@radix-ui/react-dialog';
 import Image from 'next/image';
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 export const formSchema = z.object({
@@ -52,18 +51,34 @@ const GeminiDialog = ({
        systemPrompt:defaultValues?.systemPrompt || '',  
        userPrompt:defaultValues?.userPrompt || '',
     }
-  }) 
-  const watchVariableName = form.watch("variableName") || "myDeepseekAPI"   
-  const {data:credentials, isLoading:isloadingCredential} = useCredentialsByType(CredentialsType.DEEPSEEK)
+  })   
+    useEffect(() => {
+       if(open){
+         form.reset({
+          variableName:defaultValues?.variableName || "",  
+          credentialId:defaultValues?.credentialId || "",  
+          systemPrompt:defaultValues?.systemPrompt || "", 
+          userPrompt:defaultValues?.userPrompt || ''
+         })
+       }
+    }, [open, defaultValues, form])
+  const watchVariableName = form.watch("variableName") || "mygeminiAPI"   
+  const {data:credentials, isLoading:isloadingCredential} = useCredentialsByType(CredentialsType.GEMINI)  
+    const handleSubmit =(values:z.infer<typeof formSchema>)=>{  
+      onSubmit(values)    
+      onOpenChange(false)
+  
+    }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>    
-       <DialogContent> 
+       <DialogContent className='max-h-[90vh] overflow-y-auto flex flex-col'> 
         <DialogHeader>
            <DialogTitle>Gemini Configuration</DialogTitle>    
-
-        </DialogHeader>   
+            <DialogDescription>Configure AI model and prompt for this node</DialogDescription>
+        </DialogHeader>    
+        <div className="flex-1 overflow-y-auto  pr-2 no-scrollbar">
         <Form {...form}>    
-          <form className=' space-y-8 mt-4'>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className=' space-y-8 mt-4'>
                 <FormField
                     control={form.control}
                     name="variableName"
@@ -128,7 +143,7 @@ const GeminiDialog = ({
                   />
                 <FormField
                     control={form.control}
-                    name="variableName"
+                    name="systemPrompt"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Syatem Prompt</FormLabel>
@@ -151,7 +166,7 @@ const GeminiDialog = ({
                   />         
                      <FormField
                     control={form.control}
-                    name="variableName"
+                    name="userPrompt"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>User  Prompt</FormLabel>
@@ -184,7 +199,8 @@ const GeminiDialog = ({
                   
           </form>
 
-        </Form>
+        </Form> 
+        </div>
            
        </DialogContent>
 

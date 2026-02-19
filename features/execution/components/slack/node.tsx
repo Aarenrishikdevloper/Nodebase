@@ -2,7 +2,7 @@
 import { Node, NodeProps, useReactFlow } from '@xyflow/react';
 import React, { memo, useState } from 'react'
 import { BaseExecUtionNode } from '../base-execution-node';
-import SlackDaialog from './dialog';
+import SlackDaialog, { anthropciFormValues } from './dialog';
 
 type SlackNodeData ={
     webhookUrl?:string,  
@@ -16,26 +16,28 @@ export const SlackNode = memo((props:NodeProps<SlackNodeType>)=>{
     const [open, setopen] = useState(false) 
         const {setNodes} = useReactFlow()
        
-        const handleOpenSettings =()=>setopen(true)  
-         const handleSubmit =(value:any)=>{ 
-                setNodes((nodes)=>{
-                    nodes.map((node)=>{
-                        return{
-                            ...node, 
-                            data:{
-                                ...node.data,  
-                                ...value
-                            }
-                        } 
-                    
-                    }) 
-                    return nodes
-                })  
-                setopen(false)
-            }
+        const handleOpenSettings =()=>setopen(true)   
+          const handleSubmit =(values:anthropciFormValues)=>{ 
+                    setNodes((nodes)=>
+                        nodes.map((node)=>{
+                            if(node.id === props.id){
+                                 return {
+                                    ...node,  
+                                    data:{
+                                        ...node.data, 
+                                        ...values
+                                    }
+                                 }
+                            } 
+                            return node
+                        })
+                         
+                    )  
+                    setopen(false)
+                }
     return(  
         <React.Fragment>  
-            <SlackDaialog open={open} onOpenChange={setopen} onSubmit={handleSubmit}/>
+            <SlackDaialog open={open} onOpenChange={setopen} onSubmit={handleSubmit} defaultValues={nodedata}/>
         <BaseExecUtionNode    
         {...props}  
         id={props.id}  

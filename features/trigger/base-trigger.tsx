@@ -42,7 +42,7 @@ export const BaseTriggerNode = memo(({
       name={name}  
       description={description}   
       onDelete={handleDelte}    
-      onSettings={()=>onSettings}
+      onSettings={onSettings}
     >
       <NodeStatusIndicator status={status} variant={'border'} classNmae='rounded-l-2xl'>    
 

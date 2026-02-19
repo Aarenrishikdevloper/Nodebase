@@ -1,16 +1,16 @@
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/ui/dialog';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Dialog, DialogContent, DialogFooter, DialogHeader,DialogDescription, DialogTitle  } from '@/components/ui/dialog';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCredentialsByType } from '@/features/crudential/hooks/use-credential';
 import { CredentialsType } from '@/type/type';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
+
 import Image from 'next/image';
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 export const formSchema = z.object({
@@ -54,19 +54,34 @@ const SlackDaialog = ({
     }
   }) 
   const watchVariableName = form.watch("variableName") || "mySlack"   
+    const handleSubmit =(values:z.infer<typeof formSchema>)=>{  
+      onSubmit(values)    
+      onOpenChange(false)
   
+    }  
+        useEffect(() => {
+           if(open){
+             form.reset({
+              variableName:defaultValues?.variableName || "",  
+              
+              content:defaultValues?.content || "", 
+              webhookUrl:defaultValues?.webhookUrl || ''
+             })
+           }
+        }, [open, defaultValues, form])
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>    
-       <DialogContent> 
+       <DialogContent className='max-h-[90vh] overflow-y-auto flex flex-col'> 
         <DialogHeader>
            <DialogTitle>Slack Configuration</DialogTitle>      
            <DialogDescription>
              Configure the Slack webhook  settings for this node
            </DialogDescription>
 
-        </DialogHeader>   
+        </DialogHeader>     
+        <div className="flex-1 overflow-y-auto  pr-2 no-scrollbar">
         <Form {...form}>    
-          <form className=' space-y-8 mt-4'>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className=' space-y-8 mt-4'>
                 <FormField
                     control={form.control}
                     name="variableName"
@@ -149,7 +164,8 @@ const SlackDaialog = ({
                   
           </form>
 
-        </Form>
+        </Form> 
+        </div>
            
        </DialogContent>
 

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { memo } from "react";
 import { BaseExecUtionNode } from "../base-execution-node";
 import { GlobeIcon } from "lucide-react";
-import HttpRequestDaialog from "./dialog";
+import HttpRequestDaialog, { anthropciFormValues } from "./dialog";
 
 type HttpRequestNodeData ={
    variableName?:string;  
@@ -19,22 +19,24 @@ export const HttpRequestNode = memo((props:NodeProps<HTTPRequestNodeType>)=>{
     const description = nodedata?.endpoint ? `${nodedata.method || "GET"}:${nodedata.endpoint}`:"Not Configured"
      const [open, setopen] = useState(false)  
       const handleOpenSettings =()=>setopen(true)  
-     const handleSubmit =(value:any)=>{ 
-            setNodes((nodes)=>{
-                nodes.map((node)=>{
-                    return{
-                        ...node, 
-                        data:{
-                            ...node.data,  
-                            ...value
-                        }
-                    } 
-                
-                }) 
-                return nodes
-            })  
-            setopen(false)
-        }
+      const handleSubmit =(values:anthropciFormValues)=>{ 
+                setNodes((nodes)=>
+                    nodes.map((node)=>{
+                        if(node.id === props.id){
+                             return {
+                                ...node,  
+                                data:{
+                                    ...node.data, 
+                                    ...values
+                                }
+                             }
+                        } 
+                        return node
+                    })
+                     
+                )  
+                setopen(false)
+            }
     return (
         <React.Fragment>  
             <HttpRequestDaialog onOpenChange={setopen} open={open} defaultValues={nodedata} onSubmit={handleSubmit}/>

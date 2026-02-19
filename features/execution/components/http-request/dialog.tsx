@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import Image from 'next/image';
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 export const formSchema = z.object({
@@ -57,7 +57,21 @@ const HttpRequestDaialog = ({
   const watchVariableName = form.watch("variableName") || "myApiCall"
   const watchmethod = form.watch("method")
   const showBodyField = ["POST", "PUT", "PATCH"].includes(watchmethod)
-
+    const handleSubmit =(values:z.infer<typeof formSchema>)=>{  
+      onSubmit(values)    
+      onOpenChange(false)
+  
+    }  
+        useEffect(() => {
+           if(open){
+             form.reset({
+              variableName:defaultValues?.variableName || "",  
+              method:defaultValues?.method || "GET",  
+              endpoint:defaultValues?.endpoint || "", 
+              body:defaultValues?.body || ''
+             })
+           }
+        }, [open, defaultValues, form])
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-h-[90vh] overflow-y-auto flex flex-col '>
@@ -70,7 +84,7 @@ const HttpRequestDaialog = ({
         </DialogHeader>
         <div className='flex-1 overflow-y-auto  pr-2 no-scrollbar'>
           <Form {...form}>
-            <form className=' space-y-8 mt-4'>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className=' space-y-8 mt-4'>
               <FormField
                 control={form.control}
                 name="variableName"

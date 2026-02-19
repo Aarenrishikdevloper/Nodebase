@@ -19,22 +19,24 @@ export const DeepSeekNode = memo((props:NodeProps<AnthropicNodeType>)=>{
     const description = nodeData.usePrompt?`DeepSeek-R1-0528: ${nodeData.usePrompt.slice(0,50)}....`:"Not configured"    
     const handleOpenSettings =()=>setDialogOpen(true)   
     const {setNodes} = useReactFlow()
-    const handleSubmit =(value:anthropciFormValues)=>{  
-          setNodes((nodes)=>{
-            nodes.map((node)=>{
-                return{
-                    ...node, 
-                    data:{
-                        ...node.data,  
-                        ...value
-                    }
-                } 
-            
-            }) 
-            return nodes
-        })  
-        setDialogOpen(false)
-    }
+     const handleSubmit =(values:anthropciFormValues)=>{ 
+               setNodes((nodes)=>
+                   nodes.map((node)=>{
+                       if(node.id === props.id){
+                            return {
+                               ...node,  
+                               data:{
+                                   ...node.data, 
+                                   ...values
+                               }
+                            }
+                       } 
+                       return node
+                   })
+                    
+               )  
+              setDialogOpen(false)
+           }
     return ( 
         <>    
         <DeepSeekDaialog open={dialogopen} onOpenChange={setDialogOpen} defaultValues={nodeData} onSubmit={handleSubmit}/>

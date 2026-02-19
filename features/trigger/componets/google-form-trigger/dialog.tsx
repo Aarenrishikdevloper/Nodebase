@@ -36,7 +36,7 @@ const copyToClipboard  = async()=>{
 }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className='max-h-[90vh] overflow-y-auto flex flex-col'>
         <DialogHeader>
           <DialogTitle>
             Google Form  Configuration
@@ -46,6 +46,7 @@ const copyToClipboard  = async()=>{
           </DialogDescription>
 
         </DialogHeader>
+        <div className="flex-1 overflow-y-auto  pr-2 no-scrollbar">
         <div className=' space-y-4'>
           <div className="space-y-2">
             <label htmlFor='webhook-url'>
@@ -134,6 +135,7 @@ const copyToClipboard  = async()=>{
 
           </div>
 
+        </div>  
         </div>
       </DialogContent>
 

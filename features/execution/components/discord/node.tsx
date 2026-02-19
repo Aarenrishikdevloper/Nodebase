@@ -2,7 +2,7 @@ import { NodeType } from "@/type/type"
 import { Node, NodeProps, useReactFlow } from "@xyflow/react"
 import { memo, useState } from "react"
 import { BaseExecUtionNode } from "../base-execution-node"
-import DisCordDaialog from "./dialog"
+import DisCordDaialog, { anthropciFormValues } from "./dialog"
 
 type DiscordNodeData ={
     webhookUrl?:string,  
@@ -13,23 +13,26 @@ type DiscoedNodeType = Node<DiscordNodeData>
 export const DiscordNode = memo((props:NodeProps<DiscoedNodeType>)=>{  
     const [open, setopen] = useState(false) 
     const {setNodes} = useReactFlow()
-    const nodeData = props.data   
+    const nodeData = props.data    
+    console.log(nodeData.content)
     const description = nodeData?.content ? `Send: ${nodeData.content.slice(0,50)}...`:"Not configured"       
     const handleOpenSettings =()=>setopen(true)  
-     const handleSubmit =(value:any)=>{ 
-            setNodes((nodes)=>{
+     const handleSubmit =(values:anthropciFormValues)=>{ 
+            setNodes((nodes)=>
                 nodes.map((node)=>{
-                    return{
-                        ...node, 
-                        data:{
-                            ...node.data,  
-                            ...value
-                        }
+                    if(node.id === props.id){
+                         return {
+                            ...node,  
+                            data:{
+                                ...node.data, 
+                                ...values
+                            }
+                         }
                     } 
-                
-                }) 
-                return nodes
-            })  
+                    return node
+                })
+                 
+            )  
             setopen(false)
         }
     return(

@@ -19,22 +19,24 @@ export const GeminiNode = memo((props:NodeProps<AnthropicNodeType>)=>{
     const description = nodeData.usePrompt?`gemini-2.0-flash: ${nodeData.usePrompt.slice(0,50)}....`:"Not configured"    
     const handleOpenSettings =()=>setDialogOpen(true)   
     const {setNodes} = useReactFlow()
-    const handleSubmit =(value:anthropciFormValues)=>{  
-          setNodes((nodes)=>{
-            nodes.map((node)=>{
-                return{
-                    ...node, 
-                    data:{
-                        ...node.data,  
-                        ...value
-                    }
-                } 
-            
-            }) 
-            return nodes
-        })  
-        setDialogOpen(false)
-    }
+     const handleSubmit =(values:anthropciFormValues)=>{ 
+               setNodes((nodes)=>
+                   nodes.map((node)=>{
+                       if(node.id === props.id){
+                            return {
+                               ...node,  
+                               data:{
+                                   ...node.data, 
+                                   ...values
+                               }
+                            }
+                       } 
+                       return node
+                   })
+                    
+               )  
+               setDialogOpen(false)
+           }
     return ( 
         <>  
         <GeminiDialog open={dialogopen} onOpenChange={setDialogOpen} defaultValues={nodeData} onSubmit={handleSubmit}/>
@@ -42,7 +44,7 @@ export const GeminiNode = memo((props:NodeProps<AnthropicNodeType>)=>{
           {...props}  
           id={props.id}   
           icon={'/gemini.svg'}   
-          name="Deepseek Request" 
+          name="Gemini Request" 
           description={description}   
           onSetting={handleOpenSettings}  
           onDoubleClick={handleOpenSettings}
