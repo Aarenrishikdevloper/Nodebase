@@ -210,3 +210,12 @@
 .react-flow__node.selected #base-node {
     @apply ring-3 ring-muted-foreground/25 shadow-lg;
 }
+/* Hide scrollbar globally utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}

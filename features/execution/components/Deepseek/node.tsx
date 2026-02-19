@@ -4,6 +4,7 @@ import { Node, NodeProps, useReactFlow } from "@xyflow/react";
 import { memo, useState } from "react";
 import { BaseExecUtionNode } from "../base-execution-node";
 import DeepSeekDaialog, { anthropciFormValues } from "./dialog";
+import DisCordDaialog from "../discord/dialog";
 
 type AntthropicNodeData ={
     variableName?:string;  
@@ -35,7 +36,7 @@ export const DeepSeekNode = memo((props:NodeProps<AnthropicNodeType>)=>{
         setDialogOpen(false)
     }
     return ( 
-        <>  
+        <>    
         <DeepSeekDaialog open={dialogopen} onOpenChange={setDialogOpen} defaultValues={nodeData} onSubmit={handleSubmit}/>
         <BaseExecUtionNode   
           {...props}  
