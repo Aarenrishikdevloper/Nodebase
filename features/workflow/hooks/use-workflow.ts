@@ -1,4 +1,4 @@
-import { useTRPC } from "@/trpc/cleint";
+import {useTRPC} from "@/trpc/cleint";
 import { useMutation, useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useWorkflowParams } from "./use-workflow-params";
@@ -77,6 +77,33 @@ export const useUpdateWorkflow =()=>{
         console.log(error);
         toast.error("Failed to save Workflow data")
       }
+    })
+  )
+} 
+export const  useExecuteWorkflow =()=>{
+  const trpc = useTRPC(); 
+  return  useMutation(
+    trpc.workflow.execute.mutationOptions({
+       onSuccess:(data)=>{
+         toast.success(`Workflow ${data.name}  executed`)   
+       },
+       onError:(error)=>{
+         toast.error(`Failed to execute  workflow ${error.message}`);
+       }
+    })
+  )
+}  
+export const useNodeConfig = ()=>{
+  const trpc = useTRPC(); 
+  return useMutation(
+    trpc.workflow.saveNodeConfig.mutationOptions({
+       onSuccess:(data)=>{
+         toast.success("Node Configuration Sucessfully");
+       }, 
+       onError:(data)=>{
+        toast.success("Node Configuration failed");
+       }
+
     })
   )
 }

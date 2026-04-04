@@ -23,26 +23,23 @@ const credentialTypeMeta: Record<
   CredentialType,
   { label: string; logo: string }
 > = {
-  OPENAI: {
-    label: "OpenAI",
-    logo: "/openai.svg",
+  LLAMA: {
+    label: "Llama",
+    logo: "/meta-logo.webp",
   },
-  GEMINI: {
-    label: "Gemini",
-    logo: "/gemini.svg",
+  QWEN: {
+    label: "Qwen",
+    logo: "/qwen.webp",
   },
   DEEPSEEK: {
     label: "DeepSeek",
     logo: "/deepseek.svg",
   },
-  ANTHROPIC: {
-    label: "Anthropic",
-    logo: "/anthropic.svg", // optional / legacy
-  },
+
 };  
 const VISIBLE_TYPES: CredentialType[] = [
-  "OPENAI",
-  "GEMINI",
+  "QWEN",
+  "LLAMA",
   "DEEPSEEK",
 ];
 
@@ -90,7 +87,7 @@ export const CredentialForm =({intialdata}:credentialFormProps)=>{
        }else{
          await createCredential.mutateAsync(values,{
           onSuccess:(data)=>{
-            router.push(`/credentials/${data.id}`)
+            router.push(`/credentials`)
           }, 
           onError:(error)=>{
              console.log(error) 

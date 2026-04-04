@@ -1,5 +1,6 @@
-CREATE TYPE "public"."credential_type" AS ENUM('OPENAI', 'ANTHROPIC', 'GEMINI');--> statement-breakpoint
-CREATE TYPE "public"."node_type" AS ENUM('INITIAL', 'MANUAL_TRIGGER', 'HTTP_REQUEST', 'GOOGLE_FORM_TRIGGER', 'STRIPE_TRIGGER', 'ANTHROPIC', 'GEMINI', 'OPENAI');--> statement-breakpoint
+CREATE TYPE "public"."credential_type" AS ENUM('LLAMA', 'DEEPSEEK', 'QWEN');--> statement-breakpoint
+CREATE TYPE "public"."execution_status" AS ENUM('RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED');--> statement-breakpoint
+CREATE TYPE "public"."node_type" AS ENUM('INITIAL', 'MANUAL_TRIGGER', 'HTTP_REQUEST', 'GOOGLE_FORM_TRIGGER', 'STRIPE_TRIGGER', 'ANTHROPIC', 'DEEPSEEK', 'LLAMA', 'QWEN', 'DISCORD', 'SLACK');--> statement-breakpoint
 CREATE TABLE "account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"account_id" text NOT NULL,
@@ -29,7 +30,31 @@ CREATE TABLE "credentials" (
 	"name" text NOT NULL,
 	"type" "credential_type" NOT NULL,
 	"data" jsonb NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"user_id" varchar(255) NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "executions" (
+	"id" varchar(255) PRIMARY KEY NOT NULL,
+	"workflow_id" varchar(255) NOT NULL,
+	"status" "execution_status" DEFAULT 'RUNNING' NOT NULL,
+	"error" text,
+	"error_stack" text,
+	"started_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"completed_at" timestamp with time zone,
+	"inngest_event_id" varchar(255) NOT NULL,
+	"output" jsonb,
+	CONSTRAINT "executions_inngest_event_id_unique" UNIQUE("inngest_event_id")
+);
+--> statement-breakpoint
+CREATE TABLE "node_configs" (
+	"id" varchar(255) PRIMARY KEY NOT NULL,
+	"workflow_id" varchar(255) NOT NULL,
+	"node_id" varchar(255) NOT NULL,
+	"data" jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "nodes" (
@@ -88,6 +113,10 @@ ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("
 ALTER TABLE "connections" ADD CONSTRAINT "connections_workflow_id_workflows_id_fk" FOREIGN KEY ("workflow_id") REFERENCES "public"."workflows"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "connections" ADD CONSTRAINT "connections_from_node_id_nodes_id_fk" FOREIGN KEY ("from_node_id") REFERENCES "public"."nodes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "connections" ADD CONSTRAINT "connections_to_node_id_nodes_id_fk" FOREIGN KEY ("to_node_id") REFERENCES "public"."nodes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "credentials" ADD CONSTRAINT "credentials_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "executions" ADD CONSTRAINT "executions_workflow_id_workflows_id_fk" FOREIGN KEY ("workflow_id") REFERENCES "public"."workflows"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "node_configs" ADD CONSTRAINT "node_configs_workflow_id_workflows_id_fk" FOREIGN KEY ("workflow_id") REFERENCES "public"."workflows"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "node_configs" ADD CONSTRAINT "node_configs_node_id_nodes_id_fk" FOREIGN KEY ("node_id") REFERENCES "public"."nodes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "nodes" ADD CONSTRAINT "nodes_workflow_id_workflows_id_fk" FOREIGN KEY ("workflow_id") REFERENCES "public"."workflows"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "nodes" ADD CONSTRAINT "nodes_credential_id_credentials_id_fk" FOREIGN KEY ("credential_id") REFERENCES "public"."credentials"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

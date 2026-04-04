@@ -111,17 +111,29 @@ export const nodeTypeEnum = pgEnum("node_type", [
   "HTTP_REQUEST",
   "GOOGLE_FORM_TRIGGER",
   "STRIPE_TRIGGER",
-  "ANTHROPIC", 
+  "ANTHROPIC",
   "DEEPSEEK",
-  "GEMINI",
-  "OPENAI",
+
+  "LLAMA",
+  "QWEN",
+  "DISCORD",
+  "SLACK",
+
 ]);
 
 export const credentialTypeEnum = pgEnum("credential_type", [
-  "OPENAI",
-  "ANTHROPIC",  
+  "LLAMA",
+
   "DEEPSEEK",
-  "GEMINI",
+
+  "QWEN",
+]);
+
+export const executionStatusEnum = pgEnum("execution_status", [
+  "RUNNING",
+  "COMPLETED",
+  "FAILED",
+  "CANCELLED",
 ]);
 
 /* =========================
@@ -155,22 +167,22 @@ export const workflows = pgTable("workflows", {
 export const credentials = pgTable("credentials", {
   id: varchar("id", { length: 255 })
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),  
-   name:text("name").notNull(),
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
   type: credentialTypeEnum("type").notNull(),
-  data: jsonb("data").notNull(),  
-    userId: varchar("user_id", { length: 255 })
+  data: jsonb("data").notNull(),
+  userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
 
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
-    .notNull(),   
-     updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
- 
+
 });
 
 /* =========================
@@ -227,12 +239,60 @@ export const connections = pgTable("connections", {
 });
 
 /* =========================
+   NODE CONFIG
+========================= */
+
+export const nodeConfigs = pgTable("node_configs", {
+  id: varchar("id", { length: 255 })
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  workflowId: varchar("workflow_id", { length: 255 })
+    .notNull()
+    .references(() => workflows.id, { onDelete: "cascade" }),
+  nodeId: varchar("node_id", { length: 255 })
+    .notNull()
+    .references(() => nodes.id, { onDelete: "cascade" }),
+  data: jsonb("data").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+/* =========================
+   EXECUTION
+========================= */
+
+export const executions = pgTable("executions", {
+  id: varchar("id", { length: 255 })
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  workflowId: varchar("workflow_id", { length: 255 })
+    .notNull()
+    .references(() => workflows.id, { onDelete: "cascade" }),
+  status: executionStatusEnum("status").default("RUNNING").notNull(),
+  error: text("error"),
+  errorStack: text("error_stack"),
+  startedAt: timestamp("started_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  inngestEventId: varchar("inngest_event_id", { length: 255 })
+    .notNull()
+    .unique(),
+  output: jsonb("output"),
+});
+
+/* =========================
    RELATIONS
 ========================= */
 
 export const workflowRelations = relations(workflows, ({ many, one }) => ({
   nodes: many(nodes),
   connections: many(connections),
+  executions: many(executions),
   user: one(user, {
     fields: [workflows.userId],
     references: [user.id],
@@ -254,6 +314,7 @@ export const nodeRelations = relations(nodes, ({ one, many }) => ({
   inputConnections: many(connections, {
     relationName: "toNode",
   }),
+  configs: many(nodeConfigs),
 }));
 
 export const connectionRelations = relations(connections, ({ one }) => ({
@@ -278,4 +339,22 @@ export const credentialRelations = relations(credentials, ({ one, many }) => ({
     references: [user.id],
   }),
   nodes: many(nodes),
+}));
+
+export const executionRelations = relations(executions, ({ one }) => ({
+  workflow: one(workflows, {
+    fields: [executions.workflowId],
+    references: [workflows.id],
+  }),
+}));
+
+export const nodeConfigRelations = relations(nodeConfigs, ({ one }) => ({
+  workflow: one(workflows, {
+    fields: [nodeConfigs.workflowId],
+    references: [workflows.id],
+  }),
+  node: one(nodes, {
+    fields: [nodeConfigs.nodeId],
+    references: [nodes.id],
+  }),
 }));

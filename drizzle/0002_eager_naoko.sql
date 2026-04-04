@@ -1,1 +1,0 @@
-ALTER TYPE "public"."credential_type" ADD VALUE 'DEEPSEEK' BEFORE 'GEMINI';

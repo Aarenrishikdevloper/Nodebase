@@ -33,10 +33,10 @@ export const CredentialsContainer =({children}:{children:React.ReactNode})=>{
 type credential = InferSelectModel<typeof credentials>     
 type credentialTtype = (typeof credentialTypeEnum.enumValues)[number]
 const credentialslogos :Record<credentialTtype, string>={
-    OPENAI: "/openai.svg",
-  ANTHROPIC: "/anthropic.svg",
+    QWEN: "/qwen.webp",
+  
   DEEPSEEK: "/deepseek.svg",
-  GEMINI: "/gemini.svg",
+  LLAMA: "/meta-logo.webp",
 }
 export const CredentialsItem =({data}:{data:credential})=>{ 
   const logo = credentialslogos[data.type] || "/openai.svg"  

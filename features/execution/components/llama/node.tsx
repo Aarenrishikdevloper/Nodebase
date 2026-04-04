@@ -6,17 +6,17 @@ import { BaseExecUtionNode } from "../base-execution-node";
 import  { anthropciFormValues } from "./dialog";
 import OepnAIDaialog from "./dialog";
 
-type AntthropicNodeData ={
+type  llamaNodeData ={
     variableName?:string;  
     credentialId?:string;  
     systemPrompt?:string;  
     usePrompt?:string;
 }   
-type AnthropicNodeType = Node<AntthropicNodeData>;     
-export const OpenAiNode = memo((props:NodeProps<AnthropicNodeType>)=>{  
+type llamaNodeType = Node<llamaNodeData>;     
+export const LlamaNode = memo((props:NodeProps<llamaNodeType>)=>{  
     const [dialogopen, setDialogOpen] = useState(false)
     const nodeData = props.data; 
-    const description = nodeData.usePrompt?`gpt-oss-20b: ${nodeData.usePrompt.slice(0,50)}....`:"Not configured"    
+    const description = nodeData.usePrompt?` Llama-3.2-3B: ${nodeData.usePrompt.slice(0,50)}....`:"Not configured"    
     const handleOpenSettings =()=>setDialogOpen(true)    
     const {setNodes} = useReactFlow()
     const handleSubmit =(values:anthropciFormValues)=>{ 
@@ -43,8 +43,8 @@ export const OpenAiNode = memo((props:NodeProps<AnthropicNodeType>)=>{
         <BaseExecUtionNode   
           {...props}  
           id={props.id}   
-          icon={'/openai.svg'}   
-          name="OpenAI Request" 
+          icon={'/meta-logo.webp'}   
+          name="Llama Request" 
           description={description}   
           onSetting={handleOpenSettings}  
           onDoubleClick={handleOpenSettings}
@@ -52,4 +52,4 @@ export const OpenAiNode = memo((props:NodeProps<AnthropicNodeType>)=>{
         </>
     )
 })   
-OpenAiNode.displayName ="OpenAi"
+LlamaNode.displayName ="llama"

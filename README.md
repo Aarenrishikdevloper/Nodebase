@@ -27,7 +27,7 @@ Built with **Next.js**, **tRPC**, **Drizzle ORM**, and **BetterAuth**, Nodebase 
 - **Authentication**: BetterAuth
 - **Language**: TypeScript
 - **AI Integration**: OpenAI / LLM providers (pluggable)
-- **Deployment**: Vercel / Docker / Node.js
+- **Deployment**: Vercel / Docker / Node.js    
 
 ---
 

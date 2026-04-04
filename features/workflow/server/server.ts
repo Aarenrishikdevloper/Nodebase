@@ -1,12 +1,15 @@
 import { PAGINATION } from "@/config/constants";
+import { inngest } from "@/inngest/client";
+import { sendWorkFlowExecution } from "@/inngest/utils";
 import { db } from "@/lib/db";
-import { connections, nodes, workflows } from "@/lib/db/schema";
+import { connections, nodeConfigs, nodes, workflows } from "@/lib/db/schema";
 import { polarClient } from "@/lib/polar";
 import { getCustomerStateSafe } from "@/lib/utils";
 
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { type Node, type Edge, Position } from "@xyflow/react"
+import { add } from "date-fns";
 import { count, and, desc, eq, ilike } from "drizzle-orm";
 import z, { string } from "zod";
 
@@ -245,7 +248,51 @@ export const workflowRouter = createTRPCRouter({
        return  updateWorkflow
     }) 
 
-  })   
+  }), 
+  execute:protectedProcedure.input(z.object({id:z.string()})).mutation(async({input,ctx})=>{
+       const workflow = await db.query.workflows.findFirst({
+        where:and(
+          eq(workflows.id,input.id), 
+          eq(workflows.userId, ctx.auth.user.id)
+        )
+       })  
+       if(!workflow){
+          throw new Error("workflow not found")
+       }  
+       await sendWorkFlowExecution({workflowId:input.id})   
+       return workflow
+  }),
+  saveNodeConfig:protectedProcedure.input(
+    z.object({
+      workflowId:z.string(), 
+      nodeId:z.string(), 
+      config:z.any()
+    })
+  ).mutation(async({input})=>{
+     const {workflowId,nodeId,config} = input    
+     const existingNode = await db.query.nodeConfigs.findFirst({
+      where:(wf, {eq, and})=> and(
+              eq(wf.workflowId, workflowId), 
+              eq(wf.nodeId,nodeId)
+        )
+      
+     })  
+     if(existingNode){
+        await db.update(nodeConfigs).set({data:config}).where(
+          eq(nodeConfigs.id, existingNode.id)
+        )
+     }else{
+        await  db.insert(nodeConfigs).values({
+          workflowId:workflowId, 
+          nodeId:nodeId, 
+          data:config
+        })
+     }      
+     return {
+       sucess:true, message:"Node Config sucessfully"
+     }
+
+  })
   
 });
 

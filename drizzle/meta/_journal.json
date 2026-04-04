@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1769941045927,
-      "tag": "0000_lovely_manta",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1770020962573,
-      "tag": "0001_flaky_dark_phoenix",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1770361572259,
-      "tag": "0002_eager_naoko",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1770474876209,
-      "tag": "0003_volatile_mach_iv",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1771257377419,
-      "tag": "0004_flaky_nightshade",
+      "when": 1775226321277,
+      "tag": "0000_far_jane_foster",
       "breakpoints": true
     }
   ]

@@ -4,17 +4,18 @@ import { Button } from "@/components/ui/button";
 import { ErroView, LoadingView } from "@/components/ui/entity-view";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/features/workflow/hooks/use-workflow";
+import { useExecuteWorkflow, useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/features/workflow/hooks/use-workflow";
 import { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, MiniMap, NodeChange, Panel, ReactFlow , type Node } from "@xyflow/react";
 import { useAtomValue, useSetAtom } from "jotai";
-import { PlusIcon, SaveIcon, Workflow } from "lucide-react";
+import { FlaskConicalIcon, PlusIcon, SaveIcon, Workflow } from "lucide-react";
 import Link from "next/link";
-import { memo, useCallback, useEffect, useEffectEvent, useRef, useState } from "react";  
+import { memo, useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";  
 import '@xyflow/react/dist/style.css';
 
-import { editorAtom } from "../store/atom";
+import { editorAtom, } from "../store/atom";
 import { nodeComponet } from "@/config/node-componets";
 import { NodeSelector } from "@/components/ui/NodeSelector";
+import { NodeType } from "@/type/type";
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => { 
     const editor = useAtomValue(editorAtom); 
     const saveWorkflow = useUpdateWorkflow() 
@@ -156,10 +157,17 @@ export const Editor = ({workflowId}:{workflowId:string})=>{
     const {data:woekflow} = useSuspenseWorkflow(workflowId)    
     const[nodes, setnodes] = useState<Node[]>(woekflow.nodes)  
     const[edges, setedges] = useState<Edge[]>(woekflow.edges)
-    const setEditor = useSetAtom(editorAtom)  
+    const setEditor = useSetAtom(editorAtom)
+    
+    
+    // Set workflow ID on mount
+   
     const onNodeChange = useCallback((change:NodeChange[])=>setnodes((nodeSnapShot)=>applyNodeChanges(change, nodeSnapShot)),[])   
     const  onEdgeChange = useCallback((change:EdgeChange[])=>setedges((edgesSnapshot)=>applyEdgeChanges(change, edgesSnapshot)),[]) 
-    const onConnect = useCallback((params:Connection)=>setedges((edgeSnapShot)=>addEdge(params, edgeSnapShot)),[])    
+    const onConnect = useCallback((params:Connection)=>setedges((edgeSnapShot)=>addEdge(params, edgeSnapShot)),[])      
+    const hasmnualTrigger  = useMemo(()=>{
+        return nodes.some((node)=>node.type  === NodeType.MANUAL_TRIGGER);   
+    },[nodes])
     return <div className="h-full w-full">     
        <ReactFlow     
           nodes={nodes}    
@@ -182,9 +190,28 @@ export const Editor = ({workflowId}:{workflowId:string})=>{
           <MiniMap/> 
           <Panel position={'top-right'}>
             <AddButton/>
-          </Panel>
+          </Panel>    
+          {hasmnualTrigger && (
+            <Panel position={'bottom-center'}>     
+              <ExecuteWorkflowButton workflowId={workflowId}/>
+
+            </Panel>
+          )}
           
        </ReactFlow>
 
     </div>
+}   
+export const ExecuteWorkflowButton = ({workflowId}:{workflowId:string})=>{  
+     const executeWorkflow = useExecuteWorkflow(); 
+     const handleExecute =()=>{
+         executeWorkflow.mutate({id:workflowId});
+     }
+      return(
+         <Button size={'lg'} onClick={handleExecute}>  
+           <FlaskConicalIcon className="size-4"/>  
+           Execute workflow
+
+         </Button>
+      )
 }

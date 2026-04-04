@@ -71,7 +71,8 @@ const HttpRequestDaialog = ({
               body:defaultValues?.body || ''
              })
            }
-        }, [open, defaultValues, form])
+        }, [open, defaultValues, form])   
+        
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-h-[90vh] overflow-y-auto flex flex-col '>
@@ -102,7 +103,7 @@ const HttpRequestDaialog = ({
                     <FormDescription>
                       Use this name to reference the result in the other node:{" "}
                       {"  "}
-                      {`{{${watchVariableName}.text}}`}
+                      {`{{${watchVariableName}.httpResponse.data}}`}
                     </FormDescription>
 
                     <FormMessage />

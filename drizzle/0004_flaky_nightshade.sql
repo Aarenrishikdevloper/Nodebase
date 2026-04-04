@@ -1,1 +1,0 @@
-ALTER TYPE "public"."node_type" ADD VALUE 'DEEPSEEK' BEFORE 'GEMINI';

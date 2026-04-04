@@ -5,13 +5,15 @@ export enum NodeType {
   GOOGLE_FORM_TRIGGER = "GOOGLE_FORM_TRIGGER",
   STRIPE_TRIGGER = "STRIPE_TRIGGER",
   DEEPSEEK = "DEEPSEEK",
-  GEMINI = "GEMINI",
-  OPENAI = "OPENAI",
+  QWEN = "QWEN",
+  LLAMA = "LLAMA",
   DISCORD = "DISCORD",
   SLACK = "SLACK",
+  
 } 
 export enum CredentialsType {
-  GEMINI = "GEMINI",  
+   DEEPSEEK = "DEEPSEEK",
+  QWEN = "QWEN", 
   OPENAI = "OPENAI", 
-  DEEPSEEK ="DEEPSEEK"
+  LLAMA = "LLAMA",
 }

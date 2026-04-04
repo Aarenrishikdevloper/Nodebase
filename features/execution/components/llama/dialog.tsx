@@ -13,7 +13,6 @@ import Image from 'next/image';
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import z from 'zod';
-import { OpenAiNode } from './node';
 export const formSchema = z.object({
   variableName: z
     .string()
@@ -123,7 +122,7 @@ const OepnAIDaialog = ({
                                 <SelectItem key={option.id} value={option.id}>     
                                    <div className=" flex items-center gap-2">   
                                      <Image
-                                       src={'/deepseek.svg'}   
+                                       src={'/llama.webp'}   
                                        alt={"logo"}  
                                        height={16}  
                                        width={16}
