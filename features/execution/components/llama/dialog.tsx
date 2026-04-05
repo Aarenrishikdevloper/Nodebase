@@ -28,17 +28,17 @@ export const formSchema = z.object({
   userPrompt: z.string().min(1, "User Prompt Required"),
 });
 
-export type anthropciFormValues = z.infer<typeof formSchema>;
+export type llmaFormValues = z.infer<typeof formSchema>;
 
 export interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (value: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<anthropciFormValues>;
+  defaultValues?: Partial<llmaFormValues>;
 }
 
 
-const OepnAIDaialog = ({
+const LlamaDaialog = ({
     open, 
     onOpenChange, 
     onSubmit, 
@@ -69,12 +69,12 @@ const OepnAIDaialog = ({
          }
       }, [open, defaultValues, form])
   const watchVariableName = form.watch("variableName") || "myDeepseekAPI"   
-  const {data:credentials, isLoading:isloadingCredential} = useCredentialsByType(CredentialsType.OPENAI)  
+  const {data:credentials, isLoading:isloadingCredential} = useCredentialsByType(CredentialsType.LLAMA)  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>    
        <DialogContent className='max-h-[90vh] overflow-y-auto flex flex-col'> 
         <DialogHeader>
-           <DialogTitle>OpenAI Configuration</DialogTitle>    
+           <DialogTitle> Meta Llama Configuration</DialogTitle>    
             <DialogDescription>Configure AI model and prompt for this node</DialogDescription>
         </DialogHeader>     
         <div className="flex-1 overflow-y-auto  pr-2 no-scrollbar">
@@ -122,7 +122,7 @@ const OepnAIDaialog = ({
                                 <SelectItem key={option.id} value={option.id}>     
                                    <div className=" flex items-center gap-2">   
                                      <Image
-                                       src={'/llama.webp'}   
+                                       src={'/meta-logo.webp'}   
                                        alt={"logo"}  
                                        height={16}  
                                        width={16}
@@ -144,10 +144,10 @@ const OepnAIDaialog = ({
                   />
                 <FormField
                     control={form.control}
-                    name="userPrompt"
+                    name="systemPrompt"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Syatem Prompt</FormLabel>
+                        <FormLabel>System Prompt</FormLabel>
                         <FormControl>
                           <Textarea    
                           className='min-h-[80px] font-mono text-sm'
@@ -167,7 +167,7 @@ const OepnAIDaialog = ({
                   />         
                      <FormField
                     control={form.control}
-                    name="variableName"
+                    name="userPrompt"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>User  Prompt</FormLabel>
@@ -208,4 +208,4 @@ const OepnAIDaialog = ({
     </Dialog>
   )
 }
-export default  OepnAIDaialog 
+export default  LlamaDaialog

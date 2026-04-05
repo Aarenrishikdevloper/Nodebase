@@ -3,6 +3,7 @@ import { QwenExecutor } from "../components/qwen/excecutor";
 import { NodeExecutor } from "../type/type";
 import { httpRequestExecutor } from "../components/http-request/executor";
 import { manualTriggerExecutor } from "@/features/trigger/componets/manual-trigger/executor";
+import { LlamaExecutor } from "../components/llama/executor";
 const notImplementedExecutor: NodeExecutor = async () => {
   throw new Error("Executor not implemented");
 };
@@ -14,7 +15,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   GOOGLE_FORM_TRIGGER: notImplementedExecutor,
   STRIPE_TRIGGER: notImplementedExecutor,
   QWEN:QwenExecutor as NodeExecutor,     // ✅ only real one
-  LLAMA: notImplementedExecutor,
+  LLAMA: LlamaExecutor,
   ANTHROPIC: notImplementedExecutor,
   DISCORD: notImplementedExecutor,
   SLACK: notImplementedExecutor, 

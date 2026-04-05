@@ -9,6 +9,7 @@ import { qwenChannel } from "./channel/qwen";
 import { getExecutor, NodeType } from "@/features/execution/lib/executor-registry";
 import { httpRequestChannel } from "./channel/httprequest";
 import { manualTriggerChannel } from "./channel/manual-trigger";
+import { llmaChannel } from "./channel/llma";
 export const executeWorkflow = inngest.createFunction(
     {
         id:"execute-workflow",  
@@ -31,7 +32,8 @@ export const executeWorkflow = inngest.createFunction(
       channels:[
         qwenChannel(),  
         httpRequestChannel(), 
-        manualTriggerChannel(),
+        manualTriggerChannel(),  
+        llmaChannel(),
       ],      
 
       

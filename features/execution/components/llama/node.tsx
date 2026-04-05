@@ -3,23 +3,37 @@
 import { Node, NodeProps, useReactFlow } from "@xyflow/react";
 import { memo, useState } from "react";
 import { BaseExecUtionNode } from "../base-execution-node";
-import  { anthropciFormValues } from "./dialog";
-import OepnAIDaialog from "./dialog";
+import  LlamaDaialog, { llmaFormValues } from "./dialog";
+import { useParams } from "next/navigation";
+import { useNodeConfig } from "@/features/workflow/hooks/use-workflow";
+import { useNodeStatus } from "../../hooks/use-node";
+import { LLAMA_CHANNEL_NAME } from "@/inngest/channel/llma";
+import { fetchLlmaRealTimeToken } from "./action";
+
 
 type  llamaNodeData ={
     variableName?:string;  
     credentialId?:string;  
     systemPrompt?:string;  
-    usePrompt?:string;
+    userPrompt?:string;  // Changed from usePrompt to userPrompt
 }   
 type llamaNodeType = Node<llamaNodeData>;     
 export const LlamaNode = memo((props:NodeProps<llamaNodeType>)=>{  
     const [dialogopen, setDialogOpen] = useState(false)
     const nodeData = props.data; 
-    const description = nodeData.usePrompt?` Llama-3.2-3B: ${nodeData.usePrompt.slice(0,50)}....`:"Not configured"    
-    const handleOpenSettings =()=>setDialogOpen(true)    
-    const {setNodes} = useReactFlow()
-    const handleSubmit =(values:anthropciFormValues)=>{ 
+    const description = nodeData.userPrompt?` Llama-3.2-3B: ${nodeData.userPrompt.slice(0,50)}....`:"Not configured"    
+    const handleOpenSettings =()=>setDialogOpen(true)          
+    const {setNodes} = useReactFlow()   
+      const params = useParams(); 
+        const workflowId = params.workflowId as string           
+       const nodeStatus = useNodeStatus({
+         nodeId:props.id, 
+         channel:LLAMA_CHANNEL_NAME, 
+         topic:"status",  
+         refreshToken:fetchLlmaRealTimeToken
+       })
+        const saveConfig = useNodeConfig()
+    const handleSubmit =(values:llmaFormValues)=>{ 
               setNodes((nodes)=>
                   nodes.map((node)=>{
                       if(node.id === props.id){
@@ -34,20 +48,26 @@ export const LlamaNode = memo((props:NodeProps<llamaNodeType>)=>{
                       return node
                   })
                    
-              )  
+              )   
+               saveConfig.mutate({
+                workflowId,
+               nodeId: props.id,
+               config: values
+              })  
               setDialogOpen(false)
           }
     return ( 
         <>  
-        <OepnAIDaialog open={dialogopen} onOpenChange={setDialogOpen} defaultValues={nodeData} onSubmit={handleSubmit}/>
+        <LlamaDaialog open={dialogopen} onOpenChange={setDialogOpen} defaultValues={nodeData} onSubmit={handleSubmit}/>
         <BaseExecUtionNode   
           {...props}  
           id={props.id}   
           icon={'/meta-logo.webp'}   
-          name="Llama Request" 
+          name="llama Request" 
           description={description}   
           onSetting={handleOpenSettings}  
-          onDoubleClick={handleOpenSettings}
+          onDoubleClick={handleOpenSettings}  
+          status={nodeStatus}
         /> 
         </>
     )
