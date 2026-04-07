@@ -10,6 +10,7 @@ import { getExecutor, NodeType } from "@/features/execution/lib/executor-registr
 import { httpRequestChannel } from "./channel/httprequest";
 import { manualTriggerChannel } from "./channel/manual-trigger";
 import { llmaChannel } from "./channel/llma";
+import { DeepseekChannel } from "./channel/deepseek";
 export const executeWorkflow = inngest.createFunction(
     {
         id:"execute-workflow",  
@@ -33,7 +34,8 @@ export const executeWorkflow = inngest.createFunction(
         qwenChannel(),  
         httpRequestChannel(), 
         manualTriggerChannel(),  
-        llmaChannel(),
+        llmaChannel(), 
+        DeepseekChannel()
       ],      
 
       

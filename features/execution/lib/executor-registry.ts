@@ -4,6 +4,7 @@ import { NodeExecutor } from "../type/type";
 import { httpRequestExecutor } from "../components/http-request/executor";
 import { manualTriggerExecutor } from "@/features/trigger/componets/manual-trigger/executor";
 import { LlamaExecutor } from "../components/llama/executor";
+import { DeepseekExecutor } from "../components/Deepseek/executor";
 const notImplementedExecutor: NodeExecutor = async () => {
   throw new Error("Executor not implemented");
 };
@@ -19,7 +20,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   ANTHROPIC: notImplementedExecutor,
   DISCORD: notImplementedExecutor,
   SLACK: notImplementedExecutor, 
-  DEEPSEEK:notImplementedExecutor,
+  DEEPSEEK:DeepseekExecutor,
 };  
 export const getExecutor =(type:NodeType):NodeExecutor=>{
     const executor = executorRegistry[type]

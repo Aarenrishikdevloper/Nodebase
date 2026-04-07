@@ -70,7 +70,7 @@ const QwenDialog = ({ open, onOpenChange, onSubmit, defaultValues }: GeminiDialo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto flex flex-col">
         <DialogHeader>
-          <DialogTitle>Gemini Configuration</DialogTitle>
+          <DialogTitle>Qwen Configuration</DialogTitle>
           <DialogDescription>Configure AI model and prompt for this node</DialogDescription>
         </DialogHeader>
 

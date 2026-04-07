@@ -32,7 +32,7 @@ export const QwenExecutor:NodeExecutor<QwenNodeData> = async(
     }
 )=>{
     console.log("Executing Qwen Node with data:", data) 
-    console.log(userId)
+    
      await  publish(qwenChannel().status({nodeId, status:"loading"}));  
      if(!data.variableName){
          await publish(qwenChannel().status({nodeId, status:"error"}))  
@@ -62,7 +62,7 @@ export const QwenExecutor:NodeExecutor<QwenNodeData> = async(
           throw new NonRetriableError("Gemini node: Credentials not found");
             
      }   
-     console.log(decrypt(credential.data as string));
+     
      const openrouter = createOpenRouter({
         apiKey:decrypt(credential.data as string)    
      })
