@@ -11,12 +11,13 @@ import { httpRequestChannel } from "./channel/httprequest";
 import { manualTriggerChannel } from "./channel/manual-trigger";
 import { llmaChannel } from "./channel/llma";
 import { DeepseekChannel } from "./channel/deepseek";
+import { discordChannel } from "./channel/discord";
 export const executeWorkflow = inngest.createFunction(
     {
         id:"execute-workflow",  
-        retries:process.env.NODE_ENV === "production"?3:0, 
+        retries:process.env.NODE_ENV !== "production" ? 0 : 3,
         onFailure:async({event, step})=>{
-
+        
             const updatedExecution = await db.update(executions).set({
                 status:"FAILED",   
                 error:event.data.error.message, 
@@ -35,7 +36,8 @@ export const executeWorkflow = inngest.createFunction(
         httpRequestChannel(), 
         manualTriggerChannel(),  
         llmaChannel(), 
-        DeepseekChannel()
+        DeepseekChannel(), 
+        discordChannel()
       ],      
 
       

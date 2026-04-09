@@ -38,6 +38,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.1",
     "handlebars": "^4.7.8",
+    "html-entities": "^2.6.0",
     "idb": "^8.0.3",
     "inngest": "^3.52.6",
     "jotai": "^2.16.2",

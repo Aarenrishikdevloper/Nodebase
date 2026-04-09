@@ -5,6 +5,7 @@ import { httpRequestExecutor } from "../components/http-request/executor";
 import { manualTriggerExecutor } from "@/features/trigger/componets/manual-trigger/executor";
 import { LlamaExecutor } from "../components/llama/executor";
 import { DeepseekExecutor } from "../components/Deepseek/executor";
+import { discordExecutor } from "../components/discord/executor";
 const notImplementedExecutor: NodeExecutor = async () => {
   throw new Error("Executor not implemented");
 };
@@ -18,7 +19,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   QWEN:QwenExecutor as NodeExecutor,     // ✅ only real one
   LLAMA: LlamaExecutor,
   ANTHROPIC: notImplementedExecutor,
-  DISCORD: notImplementedExecutor,
+  DISCORD: discordExecutor,
   SLACK: notImplementedExecutor, 
   DEEPSEEK:DeepseekExecutor,
 };  
