@@ -25,17 +25,17 @@ export const formSchema = z.object({
   userPrompt: z.string().min(1, "User prompt is required"),
 });
 
-export type GeminiFormValues = z.infer<typeof formSchema>;
+export type qwenFormValues = z.infer<typeof formSchema>;
 
 export interface GeminiDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (value: GeminiFormValues) => void;
-  defaultValues?: Partial<GeminiFormValues>;
+  onSubmit: (value: qwenFormValues) => void;
+  defaultValues?: Partial<qwenFormValues>;
 }
 
 const QwenDialog = ({ open, onOpenChange, onSubmit, defaultValues }: GeminiDialogProps) => {
-  const form = useForm<GeminiFormValues>({
+  const form = useForm<qwenFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       variableName: defaultValues?.variableName ?? '',
@@ -50,7 +50,7 @@ const QwenDialog = ({ open, onOpenChange, onSubmit, defaultValues }: GeminiDialo
   const { data: credentials, isLoading: isLoadingCredential } =
     useCredentialsByType(CredentialsType.QWEN);
 
-  const handleSubmit = (values: GeminiFormValues) => {
+  const handleSubmit = (values: qwenFormValues) => {
     onSubmit(values);
     onOpenChange(false);
   };

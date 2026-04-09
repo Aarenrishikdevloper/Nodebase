@@ -29,13 +29,13 @@ export const formSchema = z.object({
   body: z.string().optional()
 });
 
-export type anthropciFormValues = z.infer<typeof formSchema>;
+export type HTTPRequestFormValues = z.infer<typeof formSchema>;
 
 export interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (value: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<anthropciFormValues>;
+  defaultValues?: Partial<HTTPRequestFormValues>;
 }
 
 

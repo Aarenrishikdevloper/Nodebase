@@ -1,8 +1,9 @@
 import {useTRPC} from "@/trpc/cleint";
-import { useMutation, useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useWorkflowParams } from "./use-workflow-params";
 import { error } from "console";
+import { trpc } from "@/trpc/server";
 export const useSuspenseWorkflows = () => {
   const trpc = useTRPC();
   const [params] = useWorkflowParams();
@@ -45,7 +46,7 @@ export const useRemoveWorkflow =()=>{
 export const useSuspenseWorkflow =(id:string)=>{
   const trpc = useTRPC()    
    return  useSuspenseQuery(trpc.workflow.getone.queryOptions({id}))
-}   
+}    
 export const useUpdateWorkflowName =()=>{
    const queryClient = useQueryClient();  
    const trpc = useTRPC();  
@@ -106,4 +107,11 @@ export const useNodeConfig = ()=>{
 
     })
   )
+}   
+export const useGetNodeConfig =(workflowId:string, nodeId:string)=>{
+   const trpc = useTRPC() 
+   return useQuery(
+      trpc.workflow.getnodeConfig.queryOptions({workflowId:workflowId, nodeId:nodeId})
+   )
+ 
 }

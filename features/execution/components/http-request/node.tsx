@@ -4,14 +4,15 @@ import React, { useState } from "react";
 import { memo, useCallback, useEffect } from "react";
 import { BaseExecUtionNode } from "../base-execution-node";
 import { GlobeIcon } from "lucide-react";
-import HttpRequestDaialog, { anthropciFormValues } from "./dialog";
+import HttpRequestDaialog, { HTTPRequestFormValues } from "./dialog";
 import { useNodeStatus } from "../../hooks/use-node";
 import { HTTP_REQUEST_CHANNEL_NAME } from "@/inngest/channel/httprequest";
 import { fetchHttpRequestRealTime } from "./action";
 import { useAtomValue } from "jotai";
 import { editorAtom } from "@/features/editor/store/atom";
-import { useNodeConfig, useUpdateWorkflow } from "@/features/workflow/hooks/use-workflow";
+import { useNodeConfig } from "@/features/workflow/hooks/use-workflow";
 import { useParams } from "next/navigation";
+import { getNodeConfigFromIDB, saveNodeConfigToIDB } from "@/lib/utils";
 
 type HttpRequestNodeData = {
     variableName?: string;
@@ -23,15 +24,17 @@ type HTTPRequestNodeType = Node<HttpRequestNodeData>
 export const HttpRequestNode = memo((props: NodeProps<HTTPRequestNodeType>) => {
     const nodedata = props.data
     const { setNodes, getNodes, getEdges } = useReactFlow()
-    const editor = useAtomValue(editorAtom)
-    const description = nodedata?.endpoint ? `${nodedata.method || "GET"}:${nodedata.endpoint}` : "Not Configured"
+    const [defaultData, setDefault] = useState<HTTPRequestFormValues | null>(null)
+
+    
+    const description = defaultData?.endpoint ? `${defaultData.method || "GET"}:${defaultData.endpoint}` : "Not Configured"
     const [open, setopen] = useState(false)
     const params = useParams();
     const workflowId = params.workflowId as string
-
-    const saveConfig = useNodeConfig()
+    const saveConfig = useNodeConfig() 
+    const key = `${workflowId}-${props.id}`
     const handleOpenSettings = useCallback(() => setopen(true), [])
-    const handleSubmit = useCallback((values: anthropciFormValues) => {
+    const handleSubmit = useCallback(async(values: HTTPRequestFormValues) => {
         setNodes((nodes) =>
             nodes.map((node) => {
                 if (node.id === props.id) {
@@ -51,9 +54,28 @@ export const HttpRequestNode = memo((props: NodeProps<HTTPRequestNodeType>) => {
             workflowId,
             nodeId: props.id,
             config: values
-        })
+        })  
+        await saveNodeConfigToIDB(key,values)  
+        setDefault(values)
         setopen(false)
-    }, [props.id, setNodes])
+    }, [props.id, setNodes])    
+    //getting node configurtion data from cache
+    useEffect(() => {
+    
+            const loadfromcace = async () => {
+               
+                const cached = await getNodeConfigFromIDB(key)
+                if (cached) {
+                    setDefault((prev) => ({
+                        ...prev,
+                        ...cached
+                    }))
+                }
+            }
+            loadfromcace()
+    
+    
+        }, [workflowId, props.id])
     const nodeStatus = useNodeStatus({
         nodeId: props.id,
         channel: HTTP_REQUEST_CHANNEL_NAME,

@@ -1,14 +1,16 @@
 'use client';
 import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { BaseExecUtionNode } from "../base-execution-node";
 import React from "react";
-import GeminiDialog, { GeminiFormValues } from "./dialog";
+import {  qwenFormValues } from "./dialog";
 import { useNodeStatus } from "../../hooks/use-node";
 import {  QWEN_CHANNEL_NAME } from "@/inngest/channel/qwen";
 import { fetchQwenRealtimeToken } from "./action";
 import { useNodeConfig } from "@/features/workflow/hooks/use-workflow";
 import { useParams } from "next/navigation";
+import { getNodeConfigFromIDB, saveNodeConfigToIDB } from "@/lib/utils";
+import QwenDialog from "./dialog";
 type QwenNodeData ={
     variableName?:string,  
      credentialId:string,  
@@ -18,9 +20,10 @@ type QwenNodeData ={
 type QwenNodeType = Node<QwenNodeData>;        
 export const QwenNode = memo((props:NodeProps<QwenNodeType>)=>{
     const {setNodes} = useReactFlow()    
-    const [dialog, setDialog]    = useState(false)     
+    const [dialog, setDialog]    = useState(false)      
+    const [defaultdata, setDefault] = useState<qwenFormValues | null>(null)
     const nodeData = props.data    
-    const description = nodeData?.userPrompt ?`Qwen3.6: ${nodeData.userPrompt.slice(0,50)}`:"Not Configured"    
+    const description = defaultdata?.userPrompt ?`Qwen3.6: ${defaultdata.userPrompt.slice(0,50)}`:"Not Configured"    
     const handleOpenSettings = ()=>{
         setDialog(true)
     }    
@@ -32,9 +35,9 @@ export const QwenNode = memo((props:NodeProps<QwenNodeType>)=>{
     })     
     const params = useParams(); 
     const workflowId = params.workflowId as string           
-
+    const key = `${workflowId}-${props.id}`
     const saveConfig = useNodeConfig()
-    const hanleSubmtit =(values:GeminiFormValues)=>{
+    const hanleSubmtit =async(values:qwenFormValues)=>{
         setNodes((nodes)=>nodes.map((node)=>{
             if(node.id === props.id){
                 return{
@@ -51,11 +54,31 @@ export const QwenNode = memo((props:NodeProps<QwenNodeType>)=>{
             workflowId, 
             nodeId:props.id, 
             config:values
-        })
-    }
+        })  
+        await saveNodeConfigToIDB(key, values) 
+        setDefault(values) 
+        await saveNodeConfigToIDB(key, values)
+
+    } 
+     useEffect(() => {
+        
+                const loadfromcace = async () => {
+                    
+                    const cached = await getNodeConfigFromIDB(key)
+                    if (cached) {
+                        setDefault((prev) => ({
+                            ...prev,
+                            ...cached
+                        }))
+                    }
+                }
+                loadfromcace()
+        
+        
+            }, [workflowId, props.id])
     return(  
          <React.Fragment> 
-            <GeminiDialog onSubmit={hanleSubmtit} open={dialog} onOpenChange={setDialog} defaultValues={nodeData}/>
+            <QwenDialog onSubmit={hanleSubmtit} open={dialog} onOpenChange={setDialog} defaultValues={nodeData}/>
         <BaseExecUtionNode    
             {...props}   
              id={props.id}    

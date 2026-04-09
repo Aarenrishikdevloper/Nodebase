@@ -278,21 +278,46 @@ export const workflowRouter = createTRPCRouter({
       
      })  
      if(existingNode){
-        await db.update(nodeConfigs).set({data:config}).where(
+       const result=  await db.update(nodeConfigs).set({data:config}).where(
           eq(nodeConfigs.id, existingNode.id)
-        )
+        ).returning({
+          data:nodeConfigs.data
+        }) 
+         return {
+          sucess:true, message:"Node Config sucessfully", data:result[0].data
+       }
      }else{
-        await  db.insert(nodeConfigs).values({
+       const result = await  db.insert(nodeConfigs).values({
           workflowId:workflowId, 
           nodeId:nodeId, 
           data:config
-        })
+        }).returning({
+          data:nodeConfigs.data
+        })  
+         return {
+          sucess:true, message:"Node Config sucessfully", data:result[0].data
+       }
      }      
-     return {
-       sucess:true, message:"Node Config sucessfully"
-     }
+    
 
-  })
+  }),   
+   getnodeConfig:protectedProcedure.input(
+    z.object({
+      workflowId:z.string(), 
+      nodeId:z.string(), 
+    })
+    
+   ).query(async({input})=>{
+       const {workflowId, nodeId} = input             
+         const nodeconfig = await db.query.nodeConfigs.findFirst({
+      where:(wf, {eq, and})=> and(
+              eq(wf.workflowId, workflowId), 
+              eq(wf.nodeId,nodeId)
+        ) 
+      
+     })     
+     return nodeconfig?.data
+   })
   
 });
 
