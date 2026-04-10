@@ -6,6 +6,7 @@ import { manualTriggerExecutor } from "@/features/trigger/componets/manual-trigg
 import { LlamaExecutor } from "../components/llama/executor";
 import { DeepseekExecutor } from "../components/Deepseek/executor";
 import { discordExecutor } from "../components/discord/executor";
+import { SlackExecutor } from "../components/slack/execution";
 const notImplementedExecutor: NodeExecutor = async () => {
   throw new Error("Executor not implemented");
 };
@@ -20,7 +21,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   LLAMA: LlamaExecutor,
   ANTHROPIC: notImplementedExecutor,
   DISCORD: discordExecutor,
-  SLACK: notImplementedExecutor, 
+  SLACK: SlackExecutor, 
   DEEPSEEK:DeepseekExecutor,
 };  
 export const getExecutor =(type:NodeType):NodeExecutor=>{

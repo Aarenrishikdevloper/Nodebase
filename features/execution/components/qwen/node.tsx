@@ -78,7 +78,7 @@ export const QwenNode = memo((props:NodeProps<QwenNodeType>)=>{
             }, [workflowId, props.id])
     return(  
          <React.Fragment> 
-            <QwenDialog onSubmit={hanleSubmtit} open={dialog} onOpenChange={setDialog} defaultValues={nodeData}/>
+            <QwenDialog onSubmit={hanleSubmtit} open={dialog} onOpenChange={setDialog} defaultValues={defaultdata!}/>
         <BaseExecUtionNode    
             {...props}   
              id={props.id}    

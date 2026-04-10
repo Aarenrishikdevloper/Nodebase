@@ -79,7 +79,7 @@ export const LlamaNode = memo((props:NodeProps<llamaNodeType>)=>{
                   }, [workflowId, props.id])
     return ( 
         <>  
-        <LlamaDaialog open={dialogopen} onOpenChange={setDialogOpen} defaultValues={nodeData} onSubmit={handleSubmit}/>
+        <LlamaDaialog open={dialogopen} onOpenChange={setDialogOpen} defaultValues={defaultData!} onSubmit={handleSubmit}/>
         <BaseExecUtionNode   
           {...props}  
           id={props.id}   

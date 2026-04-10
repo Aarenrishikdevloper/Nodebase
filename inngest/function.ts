@@ -12,6 +12,7 @@ import { manualTriggerChannel } from "./channel/manual-trigger";
 import { llmaChannel } from "./channel/llma";
 import { DeepseekChannel } from "./channel/deepseek";
 import { discordChannel } from "./channel/discord";
+import { slackChannel } from "./channel/slack";
 export const executeWorkflow = inngest.createFunction(
     {
         id:"execute-workflow",  
@@ -37,7 +38,8 @@ export const executeWorkflow = inngest.createFunction(
         manualTriggerChannel(),  
         llmaChannel(), 
         DeepseekChannel(), 
-        discordChannel()
+        discordChannel(), 
+        slackChannel()
       ],      
 
       

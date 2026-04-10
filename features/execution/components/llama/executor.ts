@@ -88,7 +88,7 @@ export const LlamaExecutor:NodeExecutor<llamaData> = async({
                 "llma-generate-text",  
                  generateText, 
                  {
-                    model:openrouter("meta-llama/llama-3.2-3b-instruct:free"), 
+                    model:openrouter("meta-llama/llama-3.2-3b-instruct"), 
                     system:systemPrompt,   
                     prompt:userPrompt,  
                     experimental_telemetry:{

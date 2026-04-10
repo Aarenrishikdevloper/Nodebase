@@ -28,13 +28,13 @@ export const formSchema = z.object({
   webhookUrl: z.string().min(1, "Webhook URL is required"),
 });
 
-export type anthropciFormValues = z.infer<typeof formSchema>;
+export type SlackFormValues = z.infer<typeof formSchema>;
 
 export interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (value: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<anthropciFormValues>;
+  defaultValues?: Partial<SlackFormValues>;
 }
 
 

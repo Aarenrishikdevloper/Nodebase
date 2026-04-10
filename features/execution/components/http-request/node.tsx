@@ -88,7 +88,7 @@ export const HttpRequestNode = memo((props: NodeProps<HTTPRequestNodeType>) => {
 
     return (
         <React.Fragment>
-            <HttpRequestDaialog onOpenChange={setopen} open={open} defaultValues={nodedata} onSubmit={handleSubmit} />
+            <HttpRequestDaialog onOpenChange={setopen} open={open} defaultValues={defaultData!} onSubmit={handleSubmit} />
             <BaseExecUtionNode
                 {...props}
                 icon={GlobeIcon}

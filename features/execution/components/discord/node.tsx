@@ -79,7 +79,7 @@ export const DiscordNode = memo((props: NodeProps<DiscoedNodeType>) => {
         }, [workflowId, props.id])
     return (
         <>
-            <DisCordDaialog open={open} onOpenChange={setopen} onSubmit={handleSubmit} />
+            <DisCordDaialog open={open} onOpenChange={setopen} onSubmit={handleSubmit} defaultValues={defauilt!}/>
             <BaseExecUtionNode
                 {...props}
                 name="Discord Request"

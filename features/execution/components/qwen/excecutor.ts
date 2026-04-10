@@ -71,7 +71,7 @@ export const QwenExecutor:NodeExecutor<QwenNodeData> = async(
             "qwen-generate-text",  
             generateText,  
             {
-                model:openrouter("qwen/qwen3.6-plus:free"), 
+                model:openrouter("qwen/qwen3-32b"),
                 system:systemPrompt, 
                 prompt:userPrompt, 
                 experimental_telemetry:{
