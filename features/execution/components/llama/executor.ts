@@ -105,7 +105,7 @@ export const LlamaExecutor:NodeExecutor<llamaData> = async({
                 [data.variableName]:{text}
             }
       } catch (error) {
-           await publish(llmaChannel().status({nodeId, status:"success"}))         
+           await publish(llmaChannel().status({nodeId, status:"error"}))         
            throw error;
       }
 
