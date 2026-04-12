@@ -24,19 +24,26 @@ export const executionRouter = createTRPCRouter({
             }).from(executions).innerJoin(workflows, eq(executions.workflowId, workflows.id)).where(eq(workflows.userId, ctx.auth.user.id))
                 .orderBy(desc(executions.startedAt)).limit(pageSize).offset(offset),
 
-            db.select({ count: count() }).from(executions).innerJoin(workflows, eq(executions.workflowId, workflows.id)).where(eq(
+            db.select({  count: count(executions.id) }).from(executions).innerJoin(workflows, eq(executions.workflowId, workflows.id)).where(eq(
                 workflows.userId, ctx.auth.user.id
             ))
         ])
-        const totalCount = totalResult[0]?.count ?? 0
+        const totalCount = Number(totalResult[0]?.count ?? 0);
         const totalPages = Math.ceil(totalCount / pageSize);
         const hasNextPage = page < totalPages;
-        const hasPreviousPage = page > 1
+        const hasPreviousPage = page > 1  
+        console.log({
+  itemsLength: items.length,
+  totalCount,
+  pageSize,
+  totalPages
+});
         return {
             items,
             page,
             pageSize,
-            totalCount,
+            totalCount, 
+            totalPages,
             hasNextPage,
             hasPreviousPage
         }

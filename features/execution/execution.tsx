@@ -1,11 +1,12 @@
 'use client';
-import { EmptyView, EntityContainer, EntityHeaders, EntityItem, EntityList, ErroView, LoadingView } from "@/components/ui/entity-view";
-import { executionStatusEnum } from "@/lib/db/schema";
+import { EmptyView, EntityContainer, EntityHeaders, EntityItem, EntityList, EntityPagination, ErroView, LoadingView } from "@/components/ui/entity-view";
+import {  executionStatusEnum } from "@/lib/db/schema";
 import { formatDistanceToNow } from "date-fns";
 
 import { CheckCircle2Icon, ClockIcon, Loader2Icon, XCircleIcon } from "lucide-react";
 import { ReactNode } from "react";
 import { useSuspenseExecutions } from "./hooks/use-execution";
+import { useExecutionParams } from "./hooks/use-execution-params";
 type ExecutionItemType = {
   id: string;
   startedAt: Date;
@@ -27,7 +28,7 @@ export const ExecutionHeader =({disabled}:{disabled?:boolean})=>{
 }   
 export const ExecutionContainer =({children}:{children:ReactNode})=>{
     return(
-        <EntityContainer header={<ExecutionHeader/>} >
+        <EntityContainer header={<ExecutionHeader/>} pagination={<ExecutionPagination/>} >
             {children}
         </EntityContainer>
     )
@@ -71,11 +72,11 @@ export const ExecutionsItem =({data}:{data:ExecutionItemType})=>{
 
 } 
 export const ExecutionError =()=>{
-   return <ErroView message="Error Loading Credentials...."/>  
+   return <ErroView message="Error Loading Execution...."/>  
 
 }   
 export const ExecutionLoader =()=>{
-  return <LoadingView message="Loading Credentials...."/>
+  return <LoadingView message="Loading Executions...."/>
 }      
 export const ExecutionsEmpty =()=>{
     return <EmptyView message="You haven't created any ecvution yet. Get started by runing  your  first workflow"/>
@@ -90,4 +91,14 @@ export const ExecutionList =()=>{
             emptyView={<ExecutionsEmpty/>}
         />
     )
+} 
+export const ExecutionPagination =()=>{
+    const excution = useSuspenseExecutions() 
+    const [params, setParams] = useExecutionParams()   
+    return <EntityPagination
+       disabled={!excution.isFetched}  
+       totalpage={excution.data?.totalPages || 1}   
+       page={excution.data?.page || 1}  
+       onPageChange={(page)=>setParams({...params,page})}
+    />
 }
