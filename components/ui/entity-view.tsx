@@ -15,7 +15,8 @@ type EntityHeaderProps = {
   description?: string;
   newButtonLabel?: string;
   disabled?: boolean;
-  isCreating?: boolean;
+  isCreating?: boolean;  
+  nobutton ?:boolean
 } & (
   | { onNew: () => void; newButtonHref?: never }
   | { newButtonHref: string; onNew?: never }
@@ -28,7 +29,8 @@ export const EntityHeaders = ({
   newButtonLabel,
   newButtonHref,
   disabled,
-  isCreating,
+  isCreating, 
+  nobutton = false
 }: EntityHeaderProps) => {
   return (
     <div className="flex flex-row items-center justify-between gap-x-4">
@@ -40,13 +42,13 @@ export const EntityHeaders = ({
           </p>
         )}
       </div>
-      {!newButtonHref && (
+      {!newButtonHref && !nobutton && (
         <Button onClick={onNew} size={"sm"} disabled={isCreating || disabled}>
           <Plus className="size-4" />
           {newButtonLabel}
         </Button>
       )}
-      {newButtonHref && !onNew && (
+      {newButtonHref && !onNew && !nobutton && (
         <Link href={newButtonHref} prefetch>
           <Button disabled={isCreating || disabled} size={"sm"}>
             <PlusIcon className="size-4" />
