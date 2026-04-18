@@ -100,35 +100,23 @@ const copyToClipboard  = async()=>{
             < ul className='text-sm text-muted-foreground  space-y-1'>
              <li>
                 <code className='bg-background px-1 py-0.5 rounded'>
-                  {"{{stripe.amount}}"}
+                  {"{{json googleForm.respondentEmail}}"}
 
                 </code>
-                - Payment amount
+                - Respondent Email
 
               </li>
               <li> 
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{stripe.currency}}"}
+                  {"{{json googleForm.responses['Question Name']}}"}
                 </code>
-                - Currency Code
-              </li>
+                - Specific answer
+              </li>  
               <li>
-                <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{stripe.customerId}}"}
+                <code className='bg-background px-1 py-0.5 rounded'>
+                  {"{{json googleForm.responses}}"}
                 </code>
-                - Customer ID
-              </li>
-              <li>
-                <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{json-stripe}}"}
-                </code>
-                - Full event data as JSON
-              </li>
-              <li>
-                <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{stripe.eventType}}"}
-                </code>
-                - Event type (e.g., Payment_intent.succeeded)
+                - All responses in JSON format
               </li>
 
             </ul>

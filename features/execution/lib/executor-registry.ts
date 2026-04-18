@@ -7,6 +7,8 @@ import { LlamaExecutor } from "../components/llama/executor";
 import { DeepseekExecutor } from "../components/Deepseek/executor";
 import { discordExecutor } from "../components/discord/executor";
 import { SlackExecutor } from "../components/slack/execution";
+import { GoogleFormTrigger } from "@/features/trigger/componets/google-form-trigger/node";
+import { googleFormTriggerExecutor } from "@/features/trigger/componets/google-form-trigger/executor";
 const notImplementedExecutor: NodeExecutor = async () => {
   throw new Error("Executor not implemented");
 };
@@ -15,7 +17,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   MANUAL_TRIGGER: manualTriggerExecutor,
   INITIAL: notImplementedExecutor,
   HTTP_REQUEST: httpRequestExecutor,
-  GOOGLE_FORM_TRIGGER: notImplementedExecutor,
+  GOOGLE_FORM_TRIGGER: googleFormTriggerExecutor,
   STRIPE_TRIGGER: notImplementedExecutor,
   QWEN:QwenExecutor as NodeExecutor,     // ✅ only real one
   LLAMA: LlamaExecutor,
