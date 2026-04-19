@@ -102,16 +102,9 @@ export const useNodeConfig = ()=>{
          toast.success("Node Configuration Sucessfully");
        }, 
        onError:(data)=>{
-        toast.success("Node Configuration failed");
+        toast.error("Node Configuration failed");
        }
 
     })
   )
-}   
-export const useGetNodeConfig =(workflowId:string, nodeId:string)=>{
-   const trpc = useTRPC() 
-   return useQuery(
-      trpc.workflow.getnodeConfig.queryOptions({workflowId:workflowId, nodeId:nodeId})
-   )
- 
 }

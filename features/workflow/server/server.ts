@@ -301,23 +301,7 @@ export const workflowRouter = createTRPCRouter({
     
 
   }),   
-   getnodeConfig:protectedProcedure.input(
-    z.object({
-      workflowId:z.string(), 
-      nodeId:z.string(), 
-    })
-    
-   ).query(async({input})=>{
-       const {workflowId, nodeId} = input             
-         const nodeconfig = await db.query.nodeConfigs.findFirst({
-      where:(wf, {eq, and})=> and(
-              eq(wf.workflowId, workflowId), 
-              eq(wf.nodeId,nodeId)
-        ) 
-      
-     })     
-     return nodeconfig?.data
-   })
+
   
 });
 
