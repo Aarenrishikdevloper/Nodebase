@@ -13,6 +13,8 @@ import { llmaChannel } from "./channel/llma";
 import { DeepseekChannel } from "./channel/deepseek";
 import { discordChannel } from "./channel/discord";
 import { slackChannel } from "./channel/slack";
+import { googleFormTriggerChannel } from "./channel/googleform";
+import { stripeTriggerChannel } from "./channel/stripe";
 export const executeWorkflow = inngest.createFunction(
     {
         id:"execute-workflow",  
@@ -39,7 +41,9 @@ export const executeWorkflow = inngest.createFunction(
         llmaChannel(), 
         DeepseekChannel(), 
         discordChannel(), 
-        slackChannel()
+        slackChannel(), 
+        googleFormTriggerChannel(), 
+        stripeTriggerChannel()
       ],      
 
       
